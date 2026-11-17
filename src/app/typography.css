@@ -1,0 +1,65 @@
+/* The corporate site's exact type roles, adapted to the concierge pages. */
+:root {
+  --type-section: clamp(2rem, 3.4vw, 3rem);
+  --type-subheading: clamp(1.375rem, 1.8vw, 1.5rem);
+  --type-body: clamp(0.875rem, 1.1vw, 0.9375rem);
+  --type-label: 0.6875rem;
+}
+
+.section-heading h2,
+.explore-card h2,
+.faq-heading h2,
+.page-cta h2 {
+  font-family: var(--font-dm), sans-serif;
+  font-size: var(--type-section);
+  font-weight: 400;
+  line-height: 1.12;
+  letter-spacing: -0.055em;
+}
+
+.step h3,
+.itinerary-content h3,
+.compact-itinerary h3,
+.terms-cards h3,
+.destination-card h2,
+.experience-card h2,
+.legal-body section h2 {
+  font-family: var(--font-dm), sans-serif;
+  font-size: var(--type-subheading);
+  font-weight: 400;
+  line-height: 1.2;
+  letter-spacing: -0.035em;
+}
+
+.step p,
+.itinerary-content > p,
+.split-heading > p,
+.terms-cards p,
+.faq-heading p,
+.faq-answer p,
+.destination-card p,
+.experience-card-body > p,
+.page-hero-bottom p,
+.page-cta p {
+  font-family: var(--font-dm), sans-serif;
+  font-size: var(--type-body);
+  font-weight: 400;
+  line-height: 1.65;
+  letter-spacing: 0;
+}
+
+.section-label,
+.eyebrow { font-family: var(--font-dm), sans-serif; font-size: var(--type-label); font-weight: 600; line-height: 1.5; letter-spacing: 0.04em; }
+.action, .outline-action, .text-action { font-size: var(--type-label); font-weight: 600; line-height: 1.5; letter-spacing: 0.025em; }
+.quote-widget h2 { font-family: var(--font-dm), sans-serif; font-weight: 400; font-size: 32px; letter-spacing: -0.055em; line-height: 1.15; }
+.widget-intro { font-size: 13px; line-height: 1.65; }
+.itinerary-content .itinerary-route { font-size: 11px !important; }
+.quote-estimate strong, .itinerary-bottom strong { font-variant-numeric: tabular-nums; }
+
+@media (max-width: 760px) {
+  .section-label, .eyebrow { font-size: 10px; }
+  .hero-copy .section-label { font-size: 9px; }
+  .quote-widget h2 { font-size: 30px; }
+  .hero h1 { font-size: clamp(42px, 9.4vw, 68px); }
+  .header-action { font-size: 0; }
+}

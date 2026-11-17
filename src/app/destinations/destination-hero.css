@@ -1,0 +1,62 @@
+.page-hero.destination-campaign {
+  padding: 0;
+  overflow: hidden;
+  background: #edf8fb;
+  color: var(--forest);
+}
+
+.destination-campaign-layout {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  align-items: center;
+  min-height: 580px;
+  padding-block: 64px;
+}
+
+.destination-campaign-copy {
+  position: relative;
+  z-index: 2;
+  width: 46%;
+  max-width: 580px;
+}
+
+.destination-campaign h1 {
+  max-width: none;
+  font-size: clamp(46px, 4.4vw, 66px);
+  line-height: 1.06;
+  letter-spacing: -0.02em;
+  text-wrap: initial;
+}
+
+.destination-campaign h1 span { color: #287e45; }
+.destination-campaign-copy p { max-width: 430px; margin-top: 28px; color: var(--secondary); font-size: 14px; line-height: 1.75; }
+
+.destination-campaign-art {
+  position: absolute;
+  z-index: 1;
+  inset-block: 0;
+  right: calc(var(--gutter) * -1);
+  width: auto;
+  height: 100%;
+  aspect-ratio: 3 / 2;
+  pointer-events: none;
+}
+
+.destination-campaign-art img { object-fit: cover; object-position: right center; mask-image: linear-gradient(to right, transparent 0%, #000 28%); }
+.destination-campaign h1 span { white-space: nowrap; }
+
+@media (max-width: 1100px) {
+  .destination-campaign-layout { min-height: 520px; padding-block: 48px; }
+  .destination-campaign h1 { font-size: clamp(40px, 4.6vw, 50px); }
+  .destination-campaign-copy p { font-size: 13px; }
+}
+
+@media (max-width: 760px) {
+  .destination-campaign-layout { display: grid; min-height: 0; padding-block: 34px 30px; }
+  .destination-campaign-copy { display: contents; }
+  .destination-campaign h1 { position: relative; z-index: 2; grid-row: 1; max-width: 520px; font-size: clamp(36px, 8.7vw, 50px); line-height: 1.08; }
+  .destination-campaign-copy p { grid-row: 3; max-width: 520px; margin-top: 4px; font-size: 13px; }
+  .destination-campaign-art { position: relative; inset: auto; grid-row: 2; width: calc(100% + var(--gutter) * 2); height: auto; aspect-ratio: 3 / 2; margin: 8px calc(var(--gutter) * -1) 0; }
+  .destination-campaign-art img { object-position: center; mask-image: linear-gradient(to bottom, transparent, #000 16%, #000 86%, transparent); }
+}

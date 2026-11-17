@@ -1,0 +1,62 @@
+import { experienceImages } from "./experience-images";
+import { destinationImages, type DestinationPhoto } from "./destination-images";
+
+export const howItWorks = [
+  { title: "Tell us your plan.", body: "Share your dates, route and group size on WhatsApp. A rough itinerary is fine." },
+  { title: "Get a fixed quote.", body: "We check availability and send your route, inclusions and price in writing." },
+  { title: "Secure it with a small advance.", body: "Accept the quote and pay the advance. Once we verify payment, we send your voucher with chauffeur and vehicle details." },
+  { title: "Meet your chauffeur.", body: "Meet at the agreed pickup point and pay the remaining balance at pickup." },
+];
+
+export const itineraries = [
+  { name: "Hills, wildlife and the south coast", duration: "8 days · 7 nights", route: "Kandy → Nuwara Eliya → Ella → Yala → Galle → Airport", body: "Travel through Kandy, Nuwara Eliya and Ella, then visit Yala and Galle before returning to the airport.", days: 8, kind: "tour", image: "/images/itineraries/south-coast-sandbar-traveller.webp", alt: "A giant 3D traveller resting on a sandy beach beside a palm-covered headland" },
+  { name: "Cultural Triangle", duration: "5 days · 4 nights", route: "Colombo airport → Sigiriya → Dambulla → Polonnaruwa → Kandy", body: "Start at Colombo airport. Visit Sigiriya, Dambulla and Polonnaruwa, then continue to Kandy.", days: 5, kind: "tour", image: "/images/itineraries/sigiriya-traveller-clean.webp", alt: "A playful 3D traveller with a camera beside Sigiriya rock" },
+  { name: "Colombo with your own driver", duration: "One day", route: "City sights, markets and Galle Face", body: "Explore Colombo at your own pace. Your chauffeur takes care of the driving.", days: 1, kind: "day", image: null, alt: "" },
+  { name: "Airport to Negombo or Colombo", duration: "Transfer", route: "Arrivals → Your hotel", body: "Meet your chauffeur at arrivals and travel straight to your hotel.", days: 0, kind: "airport", image: null, alt: "" },
+] as const;
+
+export const faqs = [
+  { question: "Is the price per person?", answer: "Prices are in US dollars per vehicle. Choose a vehicle that fits your group and luggage. We confirm the full price and inclusions in your written quote." },
+  { question: "How do I pay?", answer: "Once you accept the written quote, pay a small advance by secure payment link or bank transfer to our business account. Pay the rest at pickup by link, transfer or cash." },
+  { question: "Can I cancel?", answer: "Free cancellation up to 24 hours before your trip. See Booking terms for the refund and change conditions." },
+  { question: "Who will my chauffeur be?", answer: "We check the chauffeur and vehicle for your dates. After we confirm your booking, your voucher includes your chauffeur’s profile and vehicle details." },
+  { question: "What if my flight is delayed?", answer: "Message us on WhatsApp with your updated arrival details. We’ll check availability and explain your options under the booking terms." },
+  { question: "Where does my chauffeur stay on a tour?", answer: "Your multi-day price includes your chauffeur’s meals and lodging. We confirm the inclusions in your written quote." },
+  { question: "Do I need to send my passport?", answer: "You can request a quote with your route, dates and group size. This website does not ask you to upload a passport, visa or ticket." },
+];
+
+export const regions = ["All", "West coast", "Cultural Triangle", "Hill country", "South", "South coast", "East coast"] as const;
+export const interests = ["All", "Culture", "Wildlife", "Hill country", "Coast"] as const;
+
+export type Destination = { name: string; region: string; drive: string; description: string; season: string; stay: string; highlights: string; photo: DestinationPhoto };
+export const destinations: Destination[] = [
+  { name: "Colombo", photo: destinationImages["colombo"], region: "West coast", drive: "45 min", description: "Explore temples and Pettah’s markets before an evening walk by the sea at Galle Face Green. A convenient first or last night.", season: "Year-round", stay: "1 night", highlights: "Gangaramaya Temple, Pettah markets, Galle Face" },
+  { name: "Negombo", photo: destinationImages["negombo"], region: "West coast", drive: "20 min", description: "A beach town close to the airport for a gentle first day or an early departure.", season: "November to April", stay: "1 night", highlights: "Lagoon boat ride, fish market, beach" },
+  { name: "Sigiriya and Dambulla", photo: destinationImages["sigiriya"], region: "Cultural Triangle", drive: "4 h", description: "Climb the Lion Rock fortress above the plains and visit the painted cave temples nearby.", season: "Year-round", stay: "2 nights", highlights: "Sigiriya Rock, Pidurangala, Dambulla caves" },
+  { name: "Anuradhapura", photo: destinationImages["anuradhapura"], region: "Cultural Triangle", drive: "4 h", description: "Take time to explore the first royal capital, its stupas and the sacred Bo tree.", season: "Year-round", stay: "1 night", highlights: "Ruwanwelisaya, Sri Maha Bodhi, ancient pools" },
+  { name: "Polonnaruwa", photo: destinationImages["polonnaruwa"], region: "Cultural Triangle", drive: "5 h", description: "Cycle between medieval ruins, then consider a visit to an elephant park nearby.", season: "Year-round", stay: "Day trip from Sigiriya", highlights: "Gal Vihara, Royal Palace, Minneriya park" },
+  { name: "Kandy", photo: destinationImages["kandy"], region: "Hill country", drive: "3 h", description: "Walk by the lake in the last royal capital and visit the Temple of the Tooth.", season: "Year-round", stay: "1–2 nights", highlights: "Temple of the Tooth, botanical gardens, lake walk" },
+  { name: "Nuwara Eliya", photo: destinationImages["nuwara-eliya"], region: "Hill country", drive: "5 h", description: "Tea estates and cool air await in the hills. Bring a jumper for a stop among the plantations.", season: "January to April", stay: "1 night", highlights: "Tea factories, Horton Plains, Gregory Lake" },
+  { name: "Ella", photo: destinationImages["ella"], region: "Hill country", drive: "6 h", description: "Stay in a mountain village with valley views, accessible hikes and the hill-country railway.", season: "January to April", stay: "2 nights", highlights: "Nine Arch Bridge, Little Adam’s Peak, Ella Rock" },
+  { name: "Yala", photo: destinationImages["yala"], region: "South", drive: "5 h", description: "Take a jeep safari through the park’s dry forest and lagoons, looking for leopards, elephants and birdlife.", season: "February to July", stay: "1 night", highlights: "Morning jeep safari, coastal lagoons" },
+  { name: "Galle", photo: destinationImages["galle"], region: "South coast", drive: "2 h", description: "Follow the ramparts of a seaside fort past cafés and boutiques, with time for sunset by the lighthouse.", season: "November to April", stay: "1–2 nights", highlights: "Fort ramparts, lighthouse, Unawatuna beach" },
+  { name: "Mirissa and Weligama", photo: destinationImages["mirissa"], region: "South coast", drive: "2.5 h", description: "Spend a few days on palm-lined bays for swimming, surf lessons and whale-watching trips.", season: "November to April", stay: "2–3 nights", highlights: "Whale watching, Coconut Tree Hill, beginner surf" },
+  { name: "Trincomalee", photo: destinationImages["trincomalee"], region: "East coast", drive: "5.5 h", description: "Explore the east coast’s calm water, offshore coral and beaches around Nilaveli.", season: "May to September", stay: "2–3 nights", highlights: "Nilaveli beach, Pigeon Island, Koneswaram Temple" },
+  { name: "Arugam Bay", photo: destinationImages["arugam-bay"], region: "East coast", drive: "7 h", description: "Stay in a relaxed surf town with long point breaks and wildlife around the lagoons.", season: "May to October", stay: "3 nights or more", highlights: "Surfing, Kumana park, lagoon tours" },
+];
+
+export type Experience = { photo: DestinationPhoto; title: string; interest: string; place: string; description: string; season: string; duration: string; tip: string };
+export const experiences: Experience[] = [
+  { title: "Climb Sigiriya Rock at sunrise", photo: experienceImages["sigiriya"], interest: "Culture", place: "Sigiriya", description: "Climb past frescoes and the Lion Gate to the summit palace, with views over the plains.", season: "Year-round", duration: "3–4 hours", tip: "Start at opening time for cooler conditions. Nearby Pidurangala gives you a view back towards the rock." },
+  { title: "Ride the hill-country train", photo: experienceImages["train"], interest: "Hill country", place: "Kandy to Ella", description: "Travel through tea estates, tunnels and waterfalls on the hill-country railway.", season: "Year-round", duration: "6–7 hours", tip: "Your chauffeur can take your luggage ahead and meet you at the station. Ask about reserved seats early." },
+  { title: "Leopard safari in Yala", photo: experienceImages["leopard"], interest: "Wildlife", place: "Yala", description: "Explore dry forest, lagoons and rocky outcrops by jeep as you look for wildlife.", season: "February to July", duration: "Half day", tip: "Plan an early safari. Check the park’s opening arrangements when arranging your trip." },
+  { title: "See the elephant gathering", photo: experienceImages["elephants"], interest: "Wildlife", place: "Minneriya or Kaudulla", description: "Look for wild elephants around the reservoirs as the dry season progresses.", season: "July to October", duration: "Half day", tip: "An afternoon jeep trip from Sigiriya pairs well with a morning visit to the rock." },
+  { title: "Go whale watching", photo: experienceImages["whale"], interest: "Coast", place: "Mirissa", description: "Head out from Mirissa to look for whales and dolphins off the southern coast.", season: "December to April", duration: "Half day, early start", tip: "Choose an operator that follows responsible wildlife-watching guidelines." },
+  { title: "Evening ceremony at the Temple of the Tooth", photo: experienceImages["temple"], interest: "Culture", place: "Kandy", description: "Hear the drums and see the offerings at the evening ceremony.", season: "Year-round", duration: "1–2 hours", tip: "Cover shoulders and knees. Bring socks for the warm floors." },
+  { title: "Tour a working tea estate", photo: experienceImages["tea"], interest: "Hill country", place: "Nuwara Eliya or Ella", description: "Walk the tea slopes, see how the leaves are processed and finish with a tasting.", season: "Year-round", duration: "2 hours", tip: "Visit in the morning for a better chance to see the factory at work." },
+  { title: "Walk Galle Fort at sunset", photo: experienceImages["galle"], interest: "Coast", place: "Galle", description: "Follow the old ramparts to the lighthouse and explore cafés and galleries inside the fort.", season: "November to April", duration: "2–3 hours", tip: "Ask for a drop-off at the main gate and pickup near the lighthouse." },
+  { title: "Explore the Dambulla cave temples", photo: experienceImages["dambulla"], interest: "Culture", place: "Dambulla", description: "Visit five painted caves filled with Buddha statues, high on a rock above the town.", season: "Year-round", duration: "1–2 hours", tip: "Combine the caves with Sigiriya on the same day." },
+  { title: "Hike to World’s End", photo: experienceImages["horton"], interest: "Hill country", place: "Horton Plains", description: "Walk a 9 km loop through cloud-forest grassland to the World’s End viewpoint.", season: "January to April", duration: "Half day, early start", tip: "Aim for an early arrival. Cloud often covers the view by mid-morning." },
+  { title: "Learn to surf", photo: experienceImages["surf"], interest: "Coast", place: "Arugam Bay or Weligama", description: "Try the beginner beach breaks around Weligama or visit the east coast for its point breaks.", season: "Weligama Nov–Apr / Arugam Bay May–Oct", duration: "From 2 hours", tip: "Choose the coast around your travel season and surfing experience." },
+  { title: "Eat your way through Colombo", photo: experienceImages["food"], interest: "Culture", place: "Colombo", description: "Try hoppers, kottu and short eats in Pettah, then follow the seafront at Galle Face at dusk.", season: "Year-round", duration: "Evening", tip: "Plan this for your first evening in Colombo before heading inland." },
+];

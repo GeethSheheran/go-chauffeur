@@ -1,0 +1,12 @@
+node_modules/
+.next/
+out/
+.env*
+!.env.example
+.DS_Store
+*.tsbuildinfo
+next-env.d.ts
+test-results/
+playwright-report/
+# Keep unused uploaded video masters local.
+public/videos/
