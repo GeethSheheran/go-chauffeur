@@ -3,7 +3,7 @@
 import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from "react";
 import { usePathname } from "next/navigation";
 import { campaignReference, track } from "@/lib/analytics";
-import { whatsappUrl, quoteMessage, tripReview, estimateTrip, numberInRange, type Trip } from "@/lib/quote";
+import { businessWhatsappUrl, quoteMessage, tripReview, estimateTrip, numberInRange, type Trip } from "@/lib/quote";
 import { Arrow, WhatsAppIcon } from "./icons";
 import { services, vehicles, type Service } from "@/lib/prices";
 import { airports, towns, attractions } from "@/lib/locations";
@@ -23,7 +23,7 @@ export function EnquiryProvider({ children }: { children: ReactNode }) {
   const editButton = useRef<HTMLButtonElement>(null);
   const editor = useRef<HTMLFormElement>(null);
   const message = enquiry ? `${enquiry.message}\n\n${reference}` : "";
-  const handoffUrl = whatsappUrl(process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "", message);
+  const handoffUrl = businessWhatsappUrl(message);
   const editing = draft !== null;
   useEffect(() => {
     if (editing) editor.current?.querySelector<HTMLElement>("select, input")?.focus();
@@ -92,7 +92,7 @@ export function EnquiryButton({ children = "Chat on WhatsApp", message = "Hello 
   const pathname = usePathname();
   return <button type="button" className={className} onClick={() => {
     if (direct) {
-      const url = whatsappUrl(process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "", `${message}\n\nRef: web-${pathname === "/" ? "home" : pathname.slice(1)}-${location} / ${campaignReference()}`);
+      const url = businessWhatsappUrl(`${message}\n\nRef: web-${pathname === "/" ? "home" : pathname.slice(1)}-${location} / ${campaignReference()}`);
       if (url) { track("whatsapp_click", { location, page: pathname }); window.open(url, "_blank", "noopener,noreferrer"); return; }
     }
     enquire({ message, location, item, lead, review, trip, onSaveTrip });

@@ -61,3 +61,8 @@ export function whatsappUrl(number: string, message: string) {
   if (!/^[1-9]\d{6,14}$/.test(digits)) return null;
   return `https://wa.me/${digits}?text=${encodeURIComponent(message)}`;
 }
+
+// Confirmed public business contact; deployments do not receive .env.local.
+export function businessWhatsappUrl(message: string, number = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER) {
+  return whatsappUrl(number?.trim() || "94762196201", message);
+}

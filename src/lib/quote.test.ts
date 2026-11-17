@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { vehicles, services } from "./prices.ts";
-import { estimateTrip, numberInRange, quoteMessage, whatsappUrl } from "./quote.ts";
+import { estimateTrip, numberInRange, quoteMessage, whatsappUrl, businessWhatsappUrl } from "./quote.ts";
 
 const comfort = vehicles.find((v) => v.id === "comfort")!;
 test("brief examples: five/six-day touring and day hire use their own allowances", () => {
@@ -35,4 +35,23 @@ test("WhatsApp messages preserve Unicode and reserved characters; missing number
   assert.equal(new URL(url).searchParams.get("text"), message);
   assert.equal(new URL(url).pathname, "/94771234567");
   for (const number of ["", "YOUR_NUMBER", "0771234567", "javascript:alert(1)"]) assert.equal(whatsappUrl(number, message), null);
+});
+
+test("business WhatsApp handoff works without deployment configuration and respects overrides", () => {
+  const message = "Hello, I'd like to visit Ella & Kandy.";
+  const previous = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER;
+  try {
+    delete process.env.NEXT_PUBLIC_WHATSAPP_NUMBER;
+    for (const number of [undefined, "", "   "]) {
+      const url = new URL(businessWhatsappUrl(message, number)!);
+      assert.equal(url.pathname, "/94762196201");
+      assert.equal(url.searchParams.get("text"), message);
+    }
+    process.env.NEXT_PUBLIC_WHATSAPP_NUMBER = "+94 (77) 123-4567";
+    assert.equal(new URL(businessWhatsappUrl(message)!).pathname, "/94771234567");
+    assert.equal(businessWhatsappUrl(message, "YOUR_NUMBER"), null);
+  } finally {
+    if (previous === undefined) delete process.env.NEXT_PUBLIC_WHATSAPP_NUMBER;
+    else process.env.NEXT_PUBLIC_WHATSAPP_NUMBER = previous;
+  }
 });

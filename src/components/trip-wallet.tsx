@@ -11,7 +11,7 @@ import { DatePicker } from "./date-picker";
 import { ServiceSelect } from "./service-select";
 import { LocationInput } from "./location-input";
 import { services, vehicles, type Service } from "@/lib/prices";
-import { numberInRange, whatsappUrl } from "@/lib/quote";
+import { numberInRange, businessWhatsappUrl } from "@/lib/quote";
 import { usePathname } from "next/navigation";
 import { campaignReference, track } from "@/lib/analytics";
 
@@ -42,7 +42,7 @@ export function TripWalletProvider({ children }: { children: ReactNode }) {
     setNotice(`${place.name} ${exists ? "removed from" : "added to"} your trip.`);
   }
   const message = ["Hello GoChauffeur, I’d like help planning my Sri Lanka trip.", "", "*MY PLACES TO VISIT*", ...places.map((place, index) => `${index + 1}. ${place.name}`), "", ...(includeDetails ? ["*TRIP DETAILS*", `Service: ${services.find((s) => s.id === service)!.label}`, `Pickup: ${pickup.trim() || "To discuss"}`, `Start date: ${date || "To discuss"}`, ...(service === "multi-day" ? [`Days: ${days || "To discuss"}`] : []), `Travellers: ${travellers || "To discuss"}`, `Vehicle: ${vehicles.find((v) => v.id === vehicleId)!.name}`, ""] : []), "Please help plan my route and share a written quote. Thank you!", "", reference].join("\n");
-  const url = whatsappUrl(process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "", message);
+  const url = businessWhatsappUrl(message);
   return <TripContext.Provider value={{ places, toggle, open: () => { setReference(`Ref: web-${pathname === "/" ? "home" : pathname.slice(1)}-trip_wallet / ${campaignReference()}`); dialog.current?.showModal(); } }}>
     {children}
     <span className="sr-only" role="status">{notice}</span>

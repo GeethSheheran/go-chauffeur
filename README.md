@@ -50,13 +50,13 @@ Five content routes are implemented: `/`, `/destinations`, `/things-to-do`, `/pr
 
 Copy `.env.example` to `.env.local` and populate only confirmed public values. Never put payment credentials, bank records, or other secrets in `NEXT_PUBLIC_` variables.
 
-Planner and itinerary buttons open a review dialog. Header and page CTA WhatsApp buttons hand off directly to WhatsApp. The planner shows each trip detail and its indicative price, with inline editing, Save and Discard actions. Saved edits also update the planner and WhatsApp message. “Send to WhatsApp” opens the URL-encoded message in a separate tab; the visitor sends it from WhatsApp. The confirmed public number is `94762196201`; set `NEXT_PUBLIC_WHATSAPP_NUMBER` in the hosting environment before building for deployment. Missing or invalid numbers disable the handoff. No WhatsApp API or chatbot is used.
+Planner and itinerary buttons open a review dialog. Header and page CTA WhatsApp buttons hand off directly to WhatsApp. The planner shows each trip detail and its indicative price, with inline editing, Save and Discard actions. Saved edits also update the planner and WhatsApp message. “Send to WhatsApp” opens the URL-encoded message in a separate tab; the visitor sends it from WhatsApp. The confirmed public number `94762196201` is the shared default for all WhatsApp handoffs. Optionally set `NEXT_PUBLIC_WHATSAPP_NUMBER` in the hosting environment to override it; missing or blank values use the default, and invalid overrides disable the handoff. On Vercel, set overrides for the appropriate Production/Preview environment and redeploy: public variables are embedded during the build, and `.env.local` is not committed or uploaded through Git. No WhatsApp API or chatbot is used.
 
 Location suggestions are curated in `src/lib/locations.ts` and require no API key or location-service fees. Visitors can select Sri Lankan towns, airports and attractions, or type any custom location. Multi-day stops are separated by semicolons; unfinished typed entries are included in the review. Attractions near the pickup town or a selected town appear first. The vehicle picker uses a styled, keyboard-accessible menu in both the planner and review editor.
 
 Destination and experience cards toggle items in a shared trip shortlist. The navbar trip button opens its review, where visitors can remove stops, optionally supply service, pickup, date, duration, traveller and vehicle details, and send the selected list to WhatsApp. The shortlist remains in memory across client-side navigation; a full reload clears it.
 
-The landing source, medium and campaign are kept in session storage while browsing. No dates, names, itineraries, or other enquiry form inputs are persisted. Widget state remains in memory only. Invalid or missing numbers do not generate invalid WhatsApp destinations.
+The landing source, medium and campaign are kept in session storage while browsing. No dates, names, itineraries, or other enquiry form inputs are persisted. Widget state remains in memory only. Invalid overrides do not generate invalid WhatsApp destinations.
 
 ## Preview boundaries
 
