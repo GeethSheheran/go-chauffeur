@@ -75,17 +75,18 @@ test("Dialogs animate in and out and respect reduced motion", async ({ page }) =
 test("Empty wish list offers destinations and switches to the selected place", async ({ page }, info) => {
   await page.goto("/destinations");
   if (info.project.name === "mobile") await page.getByRole("button", { name: "Open navigation" }).click();
-  await page.getByRole("button", { name: "My trip, 0 saved places" }).click();
+  await page.getByRole("button", { name: "My trip, 0 saved ideas" }).click();
   const dialog = page.locator(".trip-wallet-dialog");
   await expect(dialog.locator(".review-content-heading")).toBeHidden();
   await expect(dialog.locator(".review-intro")).toHaveCount(0);
+  await expect(dialog).toHaveCSS("transform", "matrix(1, 0, 0, 1, 0, 0)");
   const explore = await dialog.getByRole("link", { name: "Explore destinations" }).boundingBox();
   const empty = await dialog.locator(".trip-empty").boundingBox();
   expect(explore!.width).toBeCloseTo(empty!.width, 0);
   await dialog.getByRole("button", { name: "Add Colombo to my trip", exact: true }).click();
   await expect(dialog.locator(".trip-suggestions")).toHaveCount(0);
   await expect(dialog.locator(".trip-place-list li")).toHaveCount(1);
-  await expect(dialog.locator(".review-content-heading")).toContainText("1 PLACE");
+  await expect(dialog.locator(".review-content-heading")).toContainText("1 IDEA");
   await expect(dialog.getByRole("button", { name: "Remove Colombo" })).toBeFocused();
   await dialog.getByRole("button", { name: "Remove Colombo" }).click();
   await expect(dialog.getByRole("button", { name: "Add Colombo to my trip", exact: true })).toBeVisible();

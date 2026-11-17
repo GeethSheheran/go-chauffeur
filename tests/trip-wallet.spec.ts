@@ -69,7 +69,7 @@ test("Trip shortlist toggles, survives navigation, removes stops and sends an op
   await expect(info.project.name === "mobile" ? page.getByRole("button", { name: "Open navigation" }) : page.locator(".trip-nav-button")).toBeFocused();
   await expect(colombo.getByRole("button", { name: "Add to my trip", exact: true })).toHaveAttribute("aria-pressed", "false");
   await negombo.getByRole("button", { name: "Added to my trip" }).click();
-  await expect(page.locator(".trip-nav-button")).toHaveAttribute("aria-label", "My trip, 0 saved places");
+  await expect(page.locator(".trip-nav-button")).toHaveAttribute("aria-label", "My trip, 0 saved ideas");
   await colombo.getByRole("button", { name: "Add to my trip", exact: true }).click();
   await page.locator(".footer-column").filter({ has: page.getByRole("link", { name: "Things to do", exact: true }) }).getByRole("link", { name: "Things to do", exact: true }).click();
   await expect(page).toHaveURL(/things-to-do/);

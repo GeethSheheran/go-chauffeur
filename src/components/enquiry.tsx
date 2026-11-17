@@ -5,8 +5,10 @@ import { usePathname } from "next/navigation";
 import { campaignReference, track } from "@/lib/analytics";
 import { businessWhatsappUrl, quoteMessage, tripReview, estimateTrip, numberInRange, type Trip } from "@/lib/quote";
 import { Arrow, WhatsAppIcon } from "./icons";
-import { services, vehicles, type Service } from "@/lib/prices";
-import { airports, towns, attractions } from "@/lib/locations";
+import { vehicles } from "@/lib/prices";
+import { DatePicker } from "./date-picker";
+import { ServiceSelect } from "./service-select";
+import { LocationInput } from "./location-input";
 import { Brand } from "./brand";
 import { VehicleSelect } from "./vehicle-select";
 import { Artwork } from "./artwork";
@@ -26,7 +28,7 @@ export function EnquiryProvider({ children }: { children: ReactNode }) {
   const handoffUrl = businessWhatsappUrl(message);
   const editing = draft !== null;
   useEffect(() => {
-    if (editing) editor.current?.querySelector<HTMLElement>("select, input")?.focus();
+    if (editing) editor.current?.querySelector<HTMLElement>("[role=combobox], input")?.focus();
     else if (dialog.current?.open) editButton.current?.focus();
   }, [editing]);
   useEffect(() => { campaignReference(); }, []);
@@ -49,7 +51,7 @@ export function EnquiryProvider({ children }: { children: ReactNode }) {
       <div className="review-layout">
       <aside className="review-story">
         <Brand />
-        <h2 id="enquiry-title">{enquiry?.review ? <>Your ride,<br />at a glance.</> : "Your plans, ready to send."}</h2>
+        <h2 id="enquiry-title">{enquiry?.review ? <>Your ride,<br />at a glance<span className="green-period">.</span></> : "Your plans, ready to send."}</h2>
         <Artwork name="enquiry-ready" className="review-art" />
       </aside>
       <div className="review-content">
@@ -67,14 +69,16 @@ export function EnquiryProvider({ children }: { children: ReactNode }) {
             const id = `review-${field}`;
             return <div key={label} className={label === "Indicative price" ? "review-price" : ""}>
               <dt>{draft && field ? <label htmlFor={id}>{label}</label> : label}</dt>
-              <dd>{draft && field ? field === "service" ? <select id={id} value={draft.service} onChange={(e) => setDraft({ ...draft, service: e.target.value as Service })}>{services.map((s) => <option key={s.id} value={s.id}>{s.label}</option>)}</select>
+              <dd>{draft && field ? field === "service" ? <ServiceSelect id={id} hideLabel value={draft.service} onChange={(service) => setDraft({ ...draft, service })} />
                 : field === "vehicle" ? <VehicleSelect id={id} value={draft.vehicle.id} onChange={(value) => setDraft({ ...draft, vehicle: vehicles.find((v) => v.id === value)! })} />
-                : <input id={id} type={field === "date" ? "date" : field === "days" || field === "travellers" ? "number" : "text"} min={field === "days" ? 2 : field === "travellers" ? 1 : undefined} max={field === "days" ? 30 : field === "travellers" ? 10 : undefined} step={field === "days" || field === "travellers" ? 1 : undefined} list={field === "pickup" || field === "destination" ? "review-locations" : undefined} value={draft[field]} onChange={(e) => setDraft({ ...draft, [field]: e.target.value })} />
+                : field === "date" ? <DatePicker id={id} hideLabel label={label} value={draft.date} onChange={(date) => setDraft({ ...draft, date })} />
+                : field === "pickup" || field === "destination" ? <LocationInput id={id} hideLabel label={label} placeholder="Hotel, city or area" multiple={field === "destination" && draft.service === "multi-day"} value={draft[field]} onChange={(value) => setDraft({ ...draft, [field]: value })} />
+                : <input id={id} type={field === "days" || field === "travellers" ? "number" : "text"} min={field === "days" ? 2 : field === "travellers" ? 1 : undefined} max={field === "days" ? 30 : field === "travellers" ? 10 : undefined} step={field === "days" || field === "travellers" ? 1 : undefined} value={draft[field]} onChange={(e) => setDraft({ ...draft, [field]: e.target.value })} />
                 : value}</dd>
             </div>;
           })}
         </dl>
-        {draft && <><datalist id="review-locations">{[...towns, ...airports, ...attractions].map((place) => <option key={place} value={place} />)}</datalist><p className="review-edit-note">Enter any location. Separate multiple stops with a semicolon.</p><div className="review-edit-actions"><button className="action action-dark" type="submit">Save changes <Arrow diagonal /></button><button className="outline-action" type="button" onClick={() => { setDraft(null); editButton.current?.focus(); }}>Discard changes</button></div></>}
+        {draft && <><p className="review-edit-note">Enter any location. Separate multiple stops with a semicolon.</p><div className="review-edit-actions"><button className="action action-dark" type="submit">Save changes <Arrow diagonal /></button><button className="outline-action" type="button" onClick={() => { setDraft(null); editButton.current?.focus(); }}>Discard changes</button></div></>}
       </form> : <pre className="review-message">{enquiry?.message}</pre>}
       <div className="enquiry-actions review-actions" hidden={!!draft}>
         {handoffUrl ? <a className="action action-dark" href={handoffUrl} onClick={send} target="_blank" rel="noopener noreferrer"><WhatsAppIcon /><span>Send to WhatsApp</span><Arrow diagonal /></a> : <><button className="action action-dark" disabled>Send to WhatsApp</button><p role="status">WhatsApp enquiries are not connected yet. Please try again later.</p></>}

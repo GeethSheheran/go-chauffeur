@@ -92,9 +92,11 @@ test("Airport and day enquiries accept custom locations and keep the review edit
   await expect(page.locator(".ride-review")).toContainText("On request per vehicle");
   const dialog = page.getByRole("dialog");
   await dialog.getByRole("button", { name: "Edit my ride" }).click();
-  await dialog.getByLabel("Service", { exact: true }).selectOption("multi-day");
+  await dialog.getByRole("combobox", { name: "Service", exact: true }).click();
+  await dialog.getByRole("option", { name: "Multi-day tour", exact: true }).click();
   await expect(dialog.getByLabel("Days", { exact: true })).toBeVisible();
-  await dialog.getByLabel("Service", { exact: true }).selectOption("airport");
+  await dialog.getByRole("combobox", { name: "Service", exact: true }).click();
+  await dialog.getByRole("option", { name: "Airport transfer", exact: true }).click();
   await expect(dialog.getByLabel("Days", { exact: true })).toHaveCount(0);
   await dialog.getByRole("button", { name: "Save changes" }).click();
   expect(new URL((await dialog.getByRole("link", { name: "Send to WhatsApp" }).getAttribute("href"))!).searchParams.get("text")).toContain("Service: Airport transfer");

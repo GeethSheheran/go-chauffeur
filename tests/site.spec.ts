@@ -144,7 +144,7 @@ test("Original campaign survives navigation and region filtering", async ({ page
   const ella = page.locator(".destination-card").filter({ has: page.getByRole("heading", { name: "Ella", exact: true }) });
   await ella.getByRole("button", { name: "Add to my trip" }).click();
   if (info.project.name === "mobile") await page.getByRole("button", { name: "Open navigation" }).click();
-  await page.getByRole("button", { name: "My trip, 1 saved places" }).click();
+  await page.getByRole("button", { name: "My trip, 1 saved ideas" }).click();
   await expect(page.locator(".trip-place-list")).toContainText("Ella");
   expect(new URL((await page.getByRole("dialog").getByRole("link", { name: "Send to WhatsApp" }).getAttribute("href"))!).searchParams.get("text")).toContain("web-destinations-trip_wallet / google / cpc / uk-travel");
   await page.keyboard.press("Escape");
@@ -161,7 +161,7 @@ test("Experience filters, itinerary messages and exclusive FAQs work", async ({ 
   await expect(page.locator(".experience-card")).toHaveCount(2);
   await page.locator(".experience-card").first().getByRole("button", { name: "Add to my trip" }).click();
   if (info.project.name === "mobile") await page.getByRole("button", { name: "Open navigation" }).click();
-  await page.getByRole("button", { name: "My trip, 1 saved places" }).click();
+  await page.getByRole("button", { name: "My trip, 1 saved ideas" }).click();
   await expect(page.locator(".trip-place-list")).toContainText("Leopard safari in Yala");
   await page.keyboard.press("Escape");
   await page.getByRole("button", { name: "All", exact: true }).click();

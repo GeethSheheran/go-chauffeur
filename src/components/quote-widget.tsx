@@ -5,6 +5,7 @@ import { useSearchParams } from "next/navigation";
 import { allowances, services, usd, vehicles, type Service } from "@/lib/prices";
 import { estimateTrip, numberInRange, quoteMessage, tripReview, type Trip } from "@/lib/quote";
 import { track } from "@/lib/analytics";
+import { DatePicker } from "./date-picker";
 import { VehicleSelect } from "./vehicle-select";
 import { LocationInput } from "./location-input";
 import { EnquiryButton } from "./enquiry";
@@ -57,7 +58,7 @@ function Planner({ initial }: { initial: Service }) {
       <div className="widget-fields">
         <LocationInput label={service === "airport" ? "Pickup airport" : "Pickup"} value={service === "airport" ? airport : pickup} onChange={service === "airport" ? setAirport : setPickup} placeholder="Hotel, city or airport" airport={service === "airport"} />
         <LocationInput key={service} label={service === "multi-day" ? "Places you want to see" : service === "airport" ? "Drop-off hotel or area" : "Destination"} value={destination} onChange={setDestination} placeholder={service === "multi-day" ? "e.g. Sigiriya, Kandy, Ella" : "Hotel, city or area"} multiple={service === "multi-day"} nearby={service === "airport" ? airport : pickup} />
-        <label className={`field ${service !== "multi-day" ? "field-date" : ""}`}>{service === "multi-day" ? "Start date" : "Date"}<input type="date" value={date} onChange={(e) => setDate(e.target.value)} /></label>
+        <DatePicker className={service !== "multi-day" ? "field-date" : ""} label={service === "multi-day" ? "Start date" : "Date"} value={date} onChange={setDate} />
         {service === "multi-day" ? <label className="field field-small">Days<input type="number" min="2" max="30" inputMode="numeric" value={days} aria-invalid={!validDays} aria-describedby={!validDays ? `${id}-days-error` : undefined} onChange={(e) => setDays(e.target.value)} /></label> : null}
         <label className="field field-small">Travellers<input type="number" min="1" max="10" inputMode="numeric" value={travellers} aria-invalid={!validTravellers} aria-describedby={!validTravellers ? `${id}-travellers-error` : undefined} onChange={(e) => setTravellers(e.target.value)} /></label>
         <div className="field field-full"><label htmlFor={`${id}-vehicle`}>Vehicle</label><VehicleSelect id={`${id}-vehicle`} value={vehicleId} onChange={setVehicleId} /></div>
