@@ -654,6 +654,10 @@ svg { display: block; flex-shrink: 0; }
 .vehicle-options { position: absolute; top: calc(100% + 4px); left: 0; right: 0; z-index: 15; border: 1px solid var(--line); background: white; box-shadow: 0 12px 28px rgb(12 39 28 / 14%); max-height: 260px; overflow: auto; overscroll-behavior: contain; }
 .vehicle-options button { background: white; border: 0; border-bottom: 1px solid var(--line); }
 .vehicle-options button[data-active="true"], .vehicle-options button:hover { background: #F5FAF6; }
+.vehicle-options button:disabled, .vehicle-options button[aria-disabled="true"] { opacity: 0.55; cursor: not-allowed; background: #fbfbfb; }
+.vehicle-unsuitable-note { color: #b91c1c; font-size: 10px; font-weight: 500; }
+.vehicle-auto-update-notice { margin-top: 8px; padding: 8px 12px; background: #edf7ee; border: 1px solid #c2e0c6; border-radius: 4px; color: #1b5e20; font-size: 12px; line-height: 1.4; }
+.field-error-action { background: none; border: none; color: var(--forest); text-decoration: underline; cursor: pointer; padding: 0; font: inherit; font-weight: 600; margin-left: 4px; }
 .vehicle-options button > .icon:last-child:not(:first-child) { margin-left: auto; width: 16px; }
 .trip-nav-button { width: 44px; height: 44px; display: grid; place-items: center; flex-shrink: 0; background: #F5FAF6; color: var(--forest); border: 1px solid var(--line); position: relative; cursor: pointer; }
 .trip-count { position: absolute; top: -7px; right: -7px; background: var(--forest); color: white; min-width: 19px; height: 19px; padding: 0 4px; font-size: 10px; display: grid; place-items: center; border-radius: 50%; }

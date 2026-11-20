@@ -10,9 +10,9 @@ import { TrustIcon } from "./trust-icon";
 
 export function TrustStrip() {
   const items = [
-    { icon: "price", title: "Fixed USD prices", body: "Receive your written quote before you pay." },
-    { icon: "advance", title: "A small advance to book", body: "Pay by secure link or bank transfer. Pay the rest at pickup." },
-    { icon: "cancellation", title: "Free cancellation", body: "Up to 24 hours before your trip. See Booking terms for the details." },
+    { icon: "price", title: "Fixed USD prices", body: "Receive your confirmed quotation before you pay." },
+    { icon: "advance", title: "Secure booking with just 10%", body: "Pay your booking deposit via a secure payment link or bank transfer. Settle the balance at pickup." },
+    { icon: "cancellation", title: "Free cancellation", body: "Cancel more than 24 hours before your trip for a full refund of your deposit. See booking terms." },
     { icon: "chauffeur", title: "One chauffeur, start to finish", body: "We check driver and vehicle availability before confirming your trip." },
   ] as const;
   return <section className="trust-strip container" aria-label="Travel with confidence"><div className="trust-grid">{items.map((item) => <div className="trust-item" key={item.title}><TrustIcon name={item.icon} /><div><h2>{item.title}</h2><p>{item.body}</p></div></div>)}</div></section>;
@@ -33,7 +33,7 @@ export function Itineraries() {
     <div className="itinerary-grid">{itineraries.map((item) => <article key={item.name} className={`itinerary-card ${item.image ? "has-photo" : "compact-itinerary"}`} data-reveal>
       {item.image ? <div className="itinerary-photo"><Image src={item.image} alt={item.alt} fill sizes="(max-width: 700px) 100vw, 50vw" /><span className="photo-tag">{item.duration}</span></div> : <span className="eyebrow compact-itinerary-duration">{item.duration}</span>}
       <div className="itinerary-content"><h3>{item.name}</h3><p className="itinerary-route">{item.route}</p><p>{item.body}</p>
-        <span className="itinerary-inclusion">{item.kind === "tour" ? `${item.days * allowances.multiDayKm} km · Comfort Sedan` : item.kind === "day" ? `${allowances.dayKm} km · ${allowances.dayHours} hours · Comfort Sedan` : "Your airport. Your hotel. A fixed written quote."}</span>
+        <span className="itinerary-inclusion">{item.kind === "tour" ? `${item.days * allowances.multiDayKm} km · Comfort Sedan` : item.kind === "day" ? `${allowances.dayKm} km · ${allowances.dayHours} hours · Comfort Sedan` : "Your airport. Your hotel. A confirmed quotation."}</span>
         <div className="itinerary-bottom"><div>{item.kind !== "airport" ? <><span className="small-note">From, per vehicle</span><strong>{usd(item.kind === "tour" ? item.days * comfort.multiDay! : comfort.day)}</strong></> : <span className="transfer-price">Ask for a<br />transfer quote.</span>}</div><ItineraryEnquiry name={item.name} route={item.route} days={item.days} kind={item.kind} /></div>
       </div>
     </article>)}</div>
@@ -68,11 +68,11 @@ export function Prices() {
         </dl>
       </li>)}
     </ul>
-    <p className="price-note">Multi-day rates include 120 km per day. Single-day hire includes 100 km and 10 hours. For other transfer routes, ask us for a fixed quote.</p>
-    <div className="terms-cards"><article data-reveal><h3>Paying for your trip.</h3><p>After you accept the written quote, pay a small advance through the secure link we send on WhatsApp or by transfer to our business account. We confirm your booking after verifying the payment.</p><p>Pay the rest at pickup by link, transfer or cash and receive a receipt.</p></article><article data-reveal><h3>Cancellations and changes.</h3><p>Free cancellation up to 24 hours before your trip. Read the booking terms for refunds, changes and flight delays.</p><Link href="/terms" className="action action-dark">Read booking terms <Arrow diagonal /></Link></article></div>
+    <p className="price-note">Multi-day rates include 120 km per day pooled allowance. Single-day hire includes 100 km and 10 hours. Airport rates apply to CMB and Central Colombo zone. The human-issued confirmed quotation remains authoritative.</p>
+    <div className="terms-cards"><article data-reveal><h3>Paying for your trip.</h3><p>After you accept your confirmed quotation, pay a 10% booking deposit through the secure payment link we send on WhatsApp or by bank transfer to our business account. We confirm your booking after verifying the payment.</p><p>Settle the balance at pickup by link, transfer or cash and receive a receipt.</p></article><article data-reveal><h3>Cancellations and changes.</h3><p>Cancel more than 24 hours before your trip for a full refund of your deposit. Read the booking terms for refunds, changes and flight delays.</p><Link href="/terms" className="action action-dark">Read booking terms <Arrow diagonal /></Link></article></div>
   </div></section>;
 }
 
 export function FutureTeaser() {
-  return <aside className="container"><div className="future-teaser"><p>Online booking is on its way. For now, every trip is planned with a person on WhatsApp, so you get a quote that fits your plans.</p><Arrow diagonal /></div></aside>;
+  return <aside className="container"><div className="future-teaser"><p>Online booking is on its way. For now, every trip is planned with a person on WhatsApp, so you get a confirmed quotation that fits your plans.</p><Arrow diagonal /></div></aside>;
 }

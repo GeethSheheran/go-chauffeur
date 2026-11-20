@@ -3,8 +3,8 @@ import { destinationImages, type DestinationPhoto } from "./destination-images";
 
 export const howItWorks = [
   { title: "Tell us your plan.", body: "Share your dates, route and group size on WhatsApp. A rough itinerary is fine." },
-  { title: "Get a fixed quote.", body: "We check availability and send your route, inclusions and price in writing." },
-  { title: "Secure it with a small advance.", body: "Accept the quote and pay the advance. Once we verify payment, we send your voucher with chauffeur and vehicle details." },
+  { title: "Receive your confirmed quotation.", body: "We check availability and share your personalised itinerary, inclusions and confirmed price." },
+  { title: "Secure your booking.", body: "Accept your quotation and pay a 10% booking deposit. Once your payment is verified, we'll send your booking voucher with chauffeur and vehicle details." },
   { title: "Meet your chauffeur.", body: "Meet at the agreed pickup point and pay the remaining balance at pickup." },
 ];
 
@@ -16,13 +16,13 @@ export const itineraries = [
 ] as const;
 
 export const faqs = [
-  { question: "Is the price per person?", answer: "Prices are in US dollars per vehicle. Choose a vehicle that fits your group and luggage. We confirm the full price and inclusions in your written quote." },
-  { question: "How do I pay?", answer: "Once you accept the written quote, pay a small advance by secure payment link or bank transfer to our business account. Pay the rest at pickup by link, transfer or cash." },
-  { question: "Can I cancel?", answer: "Free cancellation up to 24 hours before your trip. See Booking terms for the refund and change conditions." },
+  { question: "Is the price per person?", answer: "Prices are in US dollars per vehicle, not per person. Choose a vehicle that fits your group and luggage. We confirm the full price and inclusions in your confirmed quotation." },
+  { question: "How do I pay?", answer: "Once you accept your confirmed quotation, pay a 10% booking deposit by secure payment link or bank transfer to our business account. Settle the balance at pickup by link, transfer or cash." },
+  { question: "Can I cancel?", answer: "Cancel more than 24 hours before your trip for a full refund of your deposit. See Booking terms for the refund and change conditions." },
   { question: "Who will my chauffeur be?", answer: "We check the chauffeur and vehicle for your dates. After we confirm your booking, your voucher includes your chauffeur’s profile and vehicle details." },
   { question: "What if my flight is delayed?", answer: "Message us on WhatsApp with your updated arrival details. We’ll check availability and explain your options under the booking terms." },
-  { question: "Where does my chauffeur stay on a tour?", answer: "Your multi-day price includes your chauffeur’s meals and lodging. We confirm the inclusions in your written quote." },
-  { question: "Do I need to send my passport?", answer: "You can request a quote with your route, dates and group size. This website does not ask you to upload a passport, visa or ticket." },
+  { question: "Where does my chauffeur stay on a tour?", answer: "Your multi-day price includes your chauffeur’s meals and lodging. We confirm the inclusions in your confirmed quotation." },
+  { question: "Do I need to send my passport?", answer: "You can request a confirmed quotation with your route, dates and group size. This website does not ask you to upload a passport, visa or ticket." },
 ];
 
 export const regions = ["All", "West coast", "Cultural Triangle", "Hill country", "South", "South coast", "East coast"] as const;

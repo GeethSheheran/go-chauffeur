@@ -13,8 +13,10 @@ export default function Home() {
     <section className="hero" aria-labelledby="hero-title">
       <div className="container hero-booking-grid">
         <div className="hero-editorial">
-          <h1 id="hero-title">Your own chauffeur,<br />from the airport<br />to every stop<span className="green-period">.</span></h1>
-          <p>Airport transfers, day trips and multi-day tours with a dedicated driver and vehicle. Get a fixed written quote in US dollars and plan your route with a real person on WhatsApp.</p>
+          <h1 id="hero-title">Explore Sri Lanka.<br />Your journey.<br />Your own chauffeur<span className="green-period">.</span></h1>
+          <p>From airport transfers to islandwide day trips and multi-day tours, discover Sri Lanka at your own pace with a
+            dedicated chauffeur and vehicle. Receive a confirmed quotation in US dollars and plan your journey with a
+            real person on WhatsApp.</p>
           <div className="hero-art"><Image src="/images/illustrations/home-chauffeur-welcome.webp" alt="Our illustrated chauffeur welcoming a traveller beside an ivory car" width={1536} height={864} priority sizes="(max-width: 960px) 100vw, 55vw" /></div>
         </div>
         <div className="hero-booking-form"><Suspense fallback={<div className="quote-widget widget-loading"><h2>Plan your ride.</h2><p>Preparing your trip planner…</p></div>}><QuoteWidget /></Suspense></div>

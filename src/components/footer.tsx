@@ -26,7 +26,7 @@ export function Footer() {
       </div>
       <div className="footer-main">
         <div className="footer-intro-copy">
-          <p>Share your dates and the places you’d like to see. We’ll help plan the route and send a fixed written quote.</p>
+          <p>Share your dates and the places you’d like to see. We’ll help plan the route and send a confirmed quotation.</p>
           <div className="footer-brand-notes">
             <span>GoChauffeur is a Go Technologies product.</span>
             <span>Built in Sri Lanka. Designed for the world.</span>

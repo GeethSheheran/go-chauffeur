@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { campaignReference, track } from "@/lib/analytics";
 import { businessWhatsappUrl, quoteMessage, tripReview, estimateTrip, numberInRange, type Trip } from "@/lib/quote";
 import { Arrow, WhatsAppIcon } from "./icons";
-import { vehicles } from "@/lib/prices";
+import { vehicles, getSmallestSuitableVehicle } from "@/lib/prices";
 import { DatePicker } from "./date-picker";
 import { ServiceSelect } from "./service-select";
 import { LocationInput } from "./location-input";
@@ -55,12 +55,12 @@ export function EnquiryProvider({ children }: { children: ReactNode }) {
         <Artwork name="enquiry-ready" className="review-art" />
       </aside>
       <div className="review-content">
-      <div className="review-content-heading"><span className="review-eyebrow">{draft ? "MAKE IT YOURS" : "TRIP DETAILS"}</span><p id="enquiry-description">{draft ? "Update your ride below." : "Check your details. We’ll confirm availability and your quote on WhatsApp."}</p></div>
+      <div className="review-content-heading"><span className="review-eyebrow">{draft ? "MAKE IT YOURS" : "TRIP DETAILS"}</span><p id="enquiry-description">{draft ? "Update your ride below." : "Check your details. We’ll confirm availability and your quotation on WhatsApp."}</p></div>
       {enquiry?.review ? <form ref={editor} onSubmit={(event) => {
         event.preventDefault();
         if (!draft) return;
         enquiry.onSaveTrip?.(draft);
-        setEnquiry({ ...enquiry, trip: draft, message: `${quoteMessage(draft)}${enquiry.location === "itinerary" && enquiry.item ? `\nItinerary: ${enquiry.item}` : ""}`, review: tripReview(draft), lead: { service: draft.service, vehicle: draft.vehicle.name, days: draft.service === "multi-day" && numberInRange(draft.days, 2, 30) ? Number(draft.days) : null, estimate_usd: estimateTrip(draft.service, draft.vehicle, draft.days).amount } });
+        setEnquiry({ ...enquiry, trip: draft, message: `${quoteMessage(draft)}${enquiry.location === "itinerary" && enquiry.item ? `\nItinerary: ${enquiry.item}` : ""}`, review: tripReview(draft), lead: { service: draft.service, vehicle: draft.vehicle.name, days: draft.service === "multi-day" && numberInRange(draft.days, 2, 30) ? Number(draft.days) : null, estimate_usd: estimateTrip(draft.service, draft.vehicle, draft.days, draft.travellers).amount } });
         setDraft(null); editButton.current?.focus();
       }}>
         <dl className="ride-review" data-editing={!!draft} key={draft ? "editing" : "review"}>
@@ -70,10 +70,22 @@ export function EnquiryProvider({ children }: { children: ReactNode }) {
             return <div key={label} className={label === "Indicative price" ? "review-price" : ""}>
               <dt>{draft && field ? <label htmlFor={id}>{label}</label> : label}</dt>
               <dd>{draft && field ? field === "service" ? <ServiceSelect id={id} hideLabel value={draft.service} onChange={(service) => setDraft({ ...draft, service })} />
-                : field === "vehicle" ? <VehicleSelect id={id} value={draft.vehicle.id} onChange={(value) => setDraft({ ...draft, vehicle: vehicles.find((v) => v.id === value)! })} />
+                : field === "vehicle" ? <VehicleSelect id={id} value={draft.vehicle.id} travellers={draft.travellers} onChange={(value) => setDraft({ ...draft, vehicle: vehicles.find((v) => v.id === value)! })} />
                 : field === "date" ? <DatePicker id={id} hideLabel label={label} value={draft.date} onChange={(date) => setDraft({ ...draft, date })} />
                 : field === "pickup" || field === "destination" ? <LocationInput id={id} hideLabel label={label} placeholder="Hotel, city or area" multiple={field === "destination" && draft.service === "multi-day"} value={draft[field]} onChange={(value) => setDraft({ ...draft, [field]: value })} />
-                : <input id={id} type={field === "days" || field === "travellers" ? "number" : "text"} min={field === "days" ? 2 : field === "travellers" ? 1 : undefined} max={field === "days" ? 30 : field === "travellers" ? 10 : undefined} step={field === "days" || field === "travellers" ? 1 : undefined} value={draft[field]} onChange={(e) => setDraft({ ...draft, [field]: e.target.value })} />
+                : field === "travellers" ? <input id={id} type="number" min="1" max="20" step="1" value={draft.travellers} onChange={(e) => {
+                    const val = e.target.value;
+                    const n = Number(val);
+                    let nextVehicle = draft.vehicle;
+                    if (val.trim() !== "" && Number.isInteger(n) && n > 0 && n <= 10) {
+                      if (nextVehicle.maxTravellers !== null && n > nextVehicle.maxTravellers) {
+                        const smallest = getSmallestSuitableVehicle(n);
+                        if (smallest) nextVehicle = smallest;
+                      }
+                    }
+                    setDraft({ ...draft, travellers: val, vehicle: nextVehicle });
+                  }} />
+                : <input id={id} type={field === "days" ? "number" : "text"} min={field === "days" ? 2 : undefined} max={field === "days" ? 30 : undefined} step={field === "days" ? 1 : undefined} value={draft[field]} onChange={(e) => setDraft({ ...draft, [field]: e.target.value })} />
                 : value}</dd>
             </div>;
           })}
@@ -84,17 +96,18 @@ export function EnquiryProvider({ children }: { children: ReactNode }) {
         {handoffUrl ? <a className="action action-dark" href={handoffUrl} onClick={send} target="_blank" rel="noopener noreferrer"><WhatsAppIcon /><span>Send to WhatsApp</span><Arrow diagonal /></a> : <><button className="action action-dark" disabled>Send to WhatsApp</button><p role="status">WhatsApp enquiries are not connected yet. Please try again later.</p></>}
         <button ref={editButton} type="button" className="text-action" onClick={() => { if (enquiry?.trip) setDraft({ ...enquiry.trip }); else dialog.current?.close(); }}>{enquiry?.review ? "Edit my ride" : "Back to planning"}</button>
       </div>
-      <p className="small-note enquiry-footnote">You’ll send the message in WhatsApp. Your booking is confirmed only after you accept our written quote.</p>
+      <p className="small-note enquiry-footnote">Opening WhatsApp does not confirm a booking. A quotation is not a confirmed booking. Booking confirmation requires verified deposit receipt and confirmed driver and vehicle availability.</p>
       </div>
       </div>
     </dialog>
   </Context.Provider>;
 }
 
-export function EnquiryButton({ children = "Chat on WhatsApp", message = "Hello GoChauffeur, I’d like help planning a trip in Sri Lanka.", location = "general", item, lead, review, trip, onSaveTrip, direct = false, className = "action", icon = true, trailingIcon = <Arrow diagonal /> }: Partial<Enquiry> & { children?: ReactNode; direct?: boolean; className?: string; icon?: ReactNode; trailingIcon?: ReactNode }) {
+export function EnquiryButton({ children = "Chat on WhatsApp", message = "Hello GoChauffeur, I’d like help planning a trip in Sri Lanka.", location = "general", item, lead, review, trip, onSaveTrip, direct = false, className = "action", icon = true, trailingIcon = <Arrow diagonal />, disabled = false }: Partial<Enquiry> & { children?: ReactNode; direct?: boolean; className?: string; icon?: ReactNode; trailingIcon?: ReactNode; disabled?: boolean }) {
   const enquire = useContext(Context);
   const pathname = usePathname();
-  return <button type="button" className={className} onClick={() => {
+  return <button type="button" className={className} disabled={disabled} onClick={() => {
+    if (disabled) return;
     if (direct) {
       const url = businessWhatsappUrl(`${message}\n\nRef: web-${pathname === "/" ? "home" : pathname.slice(1)}-${location} / ${campaignReference()}`);
       if (url) { track("whatsapp_click", { location, page: pathname }); window.open(url, "_blank", "noopener,noreferrer"); return; }

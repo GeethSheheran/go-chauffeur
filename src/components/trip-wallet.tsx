@@ -10,7 +10,7 @@ import { VehicleSelect } from "./vehicle-select";
 import { DatePicker } from "./date-picker";
 import { ServiceSelect } from "./service-select";
 import { LocationInput } from "./location-input";
-import { services, vehicles, type Service } from "@/lib/prices";
+import { services, vehicles, getSmallestSuitableVehicle, type Service } from "@/lib/prices";
 import { numberInRange, businessWhatsappUrl } from "@/lib/quote";
 import { usePathname } from "next/navigation";
 import { campaignReference, track } from "@/lib/analytics";
@@ -41,7 +41,18 @@ export function TripWalletProvider({ children }: { children: ReactNode }) {
     setPlaces((previous) => exists ? previous.filter((p) => p.name !== place.name) : [...previous, place]);
     setNotice(`${place.name} ${exists ? "removed from" : "added to"} your trip.`);
   }
-  const message = ["Hello GoChauffeur, I’d like help planning my Sri Lanka trip.", "", "*MY TRIP WISH LIST*", ...places.map((place, index) => `${index + 1}. ${place.name} (${place.kind === "activity" ? "Thing to do" : "Destination"})`), "", ...(includeDetails ? ["*TRIP DETAILS*", `Service: ${services.find((s) => s.id === service)!.label}`, `Pickup: ${pickup.trim() || "To discuss"}`, `Start date: ${date || "To discuss"}`, ...(service === "multi-day" ? [`Days: ${days || "To discuss"}`] : []), `Travellers: ${travellers || "To discuss"}`, `Vehicle: ${vehicles.find((v) => v.id === vehicleId)!.name}`, ""] : []), "Please help plan my route and share a written quote. Thank you!", "", reference].join("\n");
+  function handleTravellersChange(val: string) {
+    setTravellers(val);
+    const n = Number(val);
+    if (val.trim() !== "" && Number.isInteger(n) && n > 0 && n <= 10) {
+      const cur = vehicles.find((v) => v.id === vehicleId);
+      if (cur && cur.maxTravellers !== null && n > cur.maxTravellers) {
+        const smallest = getSmallestSuitableVehicle(n);
+        if (smallest) setVehicleId(smallest.id);
+      }
+    }
+  }
+  const message = ["Hello GoChauffeur, I’d like help planning my Sri Lanka trip.", "", "*MY TRIP WISH LIST*", ...places.map((place, index) => `${index + 1}. ${place.name} (${place.kind === "activity" ? "Thing to do" : "Destination"})`), "", ...(includeDetails ? ["*TRIP DETAILS*", `Service: ${services.find((s) => s.id === service)!.label}`, `Pickup: ${pickup.trim() || "To discuss"}`, `Start date: ${date || "To discuss"}`, ...(service === "multi-day" ? [`Days: ${days || "To discuss"}`] : []), `Travellers: ${travellers || "To discuss"}`, `Vehicle: ${vehicles.find((v) => v.id === vehicleId)!.name}`, ""] : []), "Please help plan my route and share a confirmed quotation. Thank you!", "", reference].join("\n");
   const url = businessWhatsappUrl(message);
   return <TripContext.Provider value={{ places, toggle, open: () => { setReference(`Ref: web-${pathname === "/" ? "home" : pathname.slice(1)}-trip_wallet / ${campaignReference()}`); dialog.current?.showModal(); } }}>
     {children}
@@ -58,10 +69,10 @@ export function TripWalletProvider({ children }: { children: ReactNode }) {
           <LocationInput label={service === "airport" ? "Pickup airport" : "Pickup"} value={pickup} onChange={setPickup} placeholder="Hotel, city or airport" airport={service === "airport"} />
           <DatePicker value={date} onChange={setDate} />
           {service === "multi-day" && <label className="field">Days<input type="number" min="2" max="30" value={days} placeholder="To discuss" aria-invalid={!validDays} onChange={(e) => setDays(e.target.value)} />{!validDays && <span className="field-error">Enter 2–30 whole days.</span>}</label>}
-          <div className="trip-passenger-row"><label className="field">Travellers<input type="number" min="1" max="10" value={travellers} placeholder="To discuss" aria-invalid={!validTravellers} onChange={(e) => setTravellers(e.target.value)} />{!validTravellers && <span className="field-error">Enter 1–10 travellers.</span>}</label>
-          <div className="field trip-extra-vehicle"><label htmlFor="trip-extra-vehicle">Vehicle</label><VehicleSelect id="trip-extra-vehicle" value={vehicleId} onChange={setVehicleId} /></div></div>
+          <div className="trip-passenger-row"><label className="field">Travellers<input type="number" min="1" max="10" value={travellers} placeholder="To discuss" aria-invalid={!validTravellers} onChange={(e) => handleTravellersChange(e.target.value)} />{!validTravellers && <span className="field-error">Enter 1–10 travellers.</span>}</label>
+          <div className="field trip-extra-vehicle"><label htmlFor="trip-extra-vehicle">Vehicle</label><VehicleSelect id="trip-extra-vehicle" value={vehicleId} travellers={travellers} onChange={setVehicleId} /></div></div>
         </div></div>
-        {url && validDetails ? <div className="enquiry-actions review-actions"><a className="action action-dark" href={url} target="_blank" rel="noopener noreferrer" onClick={() => track("whatsapp_click", { location: "trip_wallet", stops: places.length })}><WhatsAppIcon /><span>Send to WhatsApp</span><Arrow diagonal /></a></div> : url ? <p role="alert">Check the days and travellers before sending your enquiry.</p> : <p>WhatsApp enquiries are not connected yet.</p>}<p className="small-note enquiry-footnote">We’ll confirm your route and quote together. Sending an enquiry doesn’t book your trip.</p></> : <div className="trip-empty"><h3>Where would you love to go?</h3><p>Add destinations and experiences to start your shortlist.</p><Link className="action" href="/destinations" onClick={() => dialog.current?.close()}>Explore destinations <Arrow diagonal /></Link><ul className="trip-suggestions" aria-label="Destinations to add">{destinations.map((destination) => <li key={destination.name}><Image src={destination.photo.src} width={64} height={64} alt="" /><div><span className="review-eyebrow">{destination.region}</span><strong>{destination.name}</strong></div><button type="button" className="outline-action" aria-label={`Add ${destination.name} to my trip`} onClick={() => { toggle({ name: destination.name, image: destination.photo.src, category: destination.region, kind: "destination" }); requestAnimationFrame(() => dialog.current?.querySelector<HTMLButtonElement>(".trip-place-list button")?.focus()); }}><LineIcon name="plus" /></button></li>)}</ul></div>}
+        {url && validDetails ? <div className="enquiry-actions review-actions"><a className="action action-dark" href={url} target="_blank" rel="noopener noreferrer" onClick={() => track("whatsapp_click", { location: "trip_wallet", stops: places.length })}><WhatsAppIcon /><span>Send to WhatsApp</span><Arrow diagonal /></a></div> : url ? <p role="alert">Check the days and travellers before sending your enquiry.</p> : <p>WhatsApp enquiries are not connected yet.</p>}<p className="small-note enquiry-footnote">We’ll confirm your route and quotation together. Opening WhatsApp does not confirm a booking.</p></> : <div className="trip-empty"><h3>Where would you love to go?</h3><p>Add destinations and experiences to start your shortlist.</p><Link className="action" href="/destinations" onClick={() => dialog.current?.close()}>Explore destinations <Arrow diagonal /></Link><ul className="trip-suggestions" aria-label="Destinations to add">{destinations.map((destination) => <li key={destination.name}><Image src={destination.photo.src} width={64} height={64} alt="" /><div><span className="review-eyebrow">{destination.region}</span><strong>{destination.name}</strong></div><button type="button" className="outline-action" aria-label={`Add ${destination.name} to my trip`} onClick={() => { toggle({ name: destination.name, image: destination.photo.src, category: destination.region, kind: "destination" }); requestAnimationFrame(() => dialog.current?.querySelector<HTMLButtonElement>(".trip-place-list button")?.focus()); }}><LineIcon name="plus" /></button></li>)}</ul></div>}
       </div></div>
     </dialog>
   </TripContext.Provider>;
