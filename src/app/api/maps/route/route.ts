@@ -1,4 +1,4 @@
-import { googleMaps, mapsResponse, validPlaceId } from "@/lib/google-maps";
+import { googleMaps, mapsResponse, validPlaceId, reportMapsError } from "@/lib/google-maps";
 
 export async function POST(request: Request) {
   try {
@@ -13,7 +13,8 @@ export async function POST(request: Request) {
     const route = data.routes?.[0];
     if (!route || !Number.isFinite(route.distanceMeters) || route.distanceMeters <= 0) return mapsResponse({ error: "No driving route found. Request a quotation from our team." }, 404);
     return mapsResponse({ distanceKm: route.distanceMeters / 1000, durationMinutes: Math.ceil(parseFloat(route.duration) / 60) });
-  } catch {
+  } catch (error) {
+    reportMapsError(error);
     return mapsResponse({ error: "Driving distance is unavailable. Our team can quote this route." }, 503);
   }
 }
