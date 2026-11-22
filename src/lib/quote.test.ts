@@ -136,3 +136,13 @@ test("business WhatsApp handoff works without deployment configuration and respe
     else process.env.NEXT_PUBLIC_WHATSAPP_NUMBER = previous;
   }
 });
+
+test("road distance uses the minimum and preserves fractional kilometres and cents", () => {
+  assert.deepEqual(estimateTrip("point-to-point", comfort, "1", "2", 1), { amount: 20, km: 1 });
+  assert.deepEqual(estimateTrip("point-to-point", comfort, "1", "2", 50.75), { amount: 39.45, km: 50.75 });
+  for (const distance of [NaN, Infinity, -1, 0]) assert.deepEqual(estimateTrip("point-to-point", comfort, "1", "2", distance), { amount: 20, km: null });
+  const message = quoteMessage({ service: "point-to-point", vehicle: comfort, pickup: "Colombo", destination: "Galle", date: "", days: "1", travellers: "2", distanceKm: 50.75 });
+  assert.match(message, /Driving distance: 50.8 km/);
+  assert.match(message, /Indicative price: US\$39.45 per vehicle/);
+  assert.match(message, /Pricing version:/);
+});

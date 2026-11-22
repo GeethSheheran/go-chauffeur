@@ -67,3 +67,11 @@ The landing source, medium and campaign are kept in session storage while browsi
 - Public contact details, real chauffeur profiles, external account integrations, payments, backend and deployment are not part of this frontend review.
 
 Assets and their license/provenance notes are in `docs/asset-provenance.md`. All 3D code, dependencies and vehicle models have been removed.
+
+### Google Maps location search and transfer pricing
+
+Set `GOOGLE_MAPS_API_KEY` in `.env.local` and in the hosting environment, then redeploy. This is a server-only key; do not use a `NEXT_PUBLIC_` variable. Enable **Places API (New)** and **Routes API** in the same Google Cloud project with billing. Restrict the key to these APIs and, where hosting supports stable outbound addresses, server IPs (HTTP-referrer restrictions are for browser keys). Configure Google Cloud quotas for the public search and routing features.
+
+Pickup and destination search is restricted to Sri Lanka. Select a Google suggestion in both fields for a point-to-point driving estimate. Suggestions come only from Google Maps; there are no predefined or custom suggestion options. Unselected text cannot produce an automatic route fare. Routes use driving distance, not straight-line distance; changing either location clears its previous route. A failed route shows the minimum as “From”, never as a calculated route fare. Airports retain their clearly labelled CMB–Central Colombo reference fares; day and multi-day allowances remain unchanged.
+
+`src/lib/prices.ts` owns the versioned vehicle/rate configuration. Point-to-point fare is `max(minimum, transferBase + distanceKm * perKm)`, rounded to cents after calculation. The widget, editable review and WhatsApp payload use this same calculation. Google route distance is shown to one decimal place, but pricing uses the returned metre precision. Search requests are debounced; API responses are not cached. Autocomplete uses per-request billing, without session tokens.

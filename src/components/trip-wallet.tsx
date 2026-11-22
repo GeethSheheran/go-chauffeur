@@ -66,7 +66,7 @@ export function TripWalletProvider({ children }: { children: ReactNode }) {
         <div id="trip-extra-fields" className="trip-extra-fields" hidden={!showDetails}>
           <p>A few details help us plan your ride. Leave anything undecided blank.</p>
           <ServiceSelect value={service} onChange={setService} />
-          <LocationInput label={service === "airport" ? "Pickup airport" : "Pickup"} value={pickup} onChange={setPickup} placeholder="Hotel, city or airport" airport={service === "airport"} />
+          <LocationInput label={service === "airport" ? "Pickup airport" : "Pickup"} value={pickup} onChange={setPickup} placeholder="Hotel, city or airport" />
           <DatePicker value={date} onChange={setDate} />
           {service === "multi-day" && <label className="field">Days<input type="number" min="2" max="30" value={days} placeholder="To discuss" aria-invalid={!validDays} onChange={(e) => setDays(e.target.value)} />{!validDays && <span className="field-error">Enter 2–30 whole days.</span>}</label>}
           <div className="trip-passenger-row"><label className="field">Travellers<input type="number" min="1" max="10" value={travellers} placeholder="To discuss" aria-invalid={!validTravellers} onChange={(e) => handleTravellersChange(e.target.value)} />{!validTravellers && <span className="field-error">Enter 1–10 travellers.</span>}</label>

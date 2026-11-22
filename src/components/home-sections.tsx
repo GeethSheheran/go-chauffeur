@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { howItWorks, itineraries } from "@/lib/content";
-import { allowances, usd, vehicles } from "@/lib/prices";
+import { PRICING_VERSION, allowances, usd, vehicles } from "@/lib/prices";
 import { Arrow, LineIcon } from "./icons";
 import { ItineraryEnquiry } from "./itinerary-enquiry";
 import { ExploreLink } from "./explore-link";
@@ -52,7 +52,7 @@ export function Prices() {
     <div className="section-heading split-heading" data-reveal><div><h2>Clear prices, per vehicle,<br />in US dollars.</h2></div><p>Your price includes your chauffeur, vehicle, fuel for the included distance, ordinary airport tolls and parking. On multi-day trips, your chauffeur’s meals and lodging are included.</p></div>
     <p className="price-scroll-hint" aria-hidden="true">Scroll to see all services <Arrow /></p>
     <div className="price-scroll" role="region" aria-label="Vehicle prices, scroll horizontally for all services" tabIndex={0}>
-      <table className="price-table"><caption className="sr-only">Prices in US dollars per vehicle</caption><thead><tr><th scope="col">Vehicle</th><th scope="col">Travellers</th><th scope="col">Multi-day tour<span>Per day · {allowances.multiDayKm} km / day</span></th><th scope="col">Chauffeur for a day<span>{allowances.dayKm} km · {allowances.dayHours} hours</span></th><th scope="col">CMB → Colombo<span>Central Colombo reference</span></th><th scope="col">Point-to-point<span>Minimum fare from</span></th></tr></thead><tbody>{vehicles.map((v) => <tr key={v.id}><th scope="row"><div className="price-vehicle"><span className="price-vehicle-art" data-vehicle={v.id} aria-hidden="true" /><span>{v.name}{v.id === "comfort" ? <span className="table-note">The classic touring choice</span> : null}</span></div></th><td>{v.seats}</td><td>{usd(v.multiDay)}</td><td>{usd(v.day)}</td><td>{usd(v.airport)}</td><td>{usd(v.pointToPoint)}</td></tr>)}</tbody></table>
+      <table className="price-table"><caption className="sr-only">Prices in US dollars per vehicle</caption><thead><tr><th scope="col">Vehicle</th><th scope="col">Travellers</th><th scope="col">Multi-day tour<span>Per day · {allowances.multiDayKm} km / day</span></th><th scope="col">Chauffeur for a day<span>{allowances.dayKm} km · {allowances.dayHours} hours</span></th><th scope="col">CMB → Colombo<span>Central Colombo reference</span></th><th scope="col">Point-to-point<span>Minimum fare from</span></th><th scope="col">Transfer base</th><th scope="col">Per km</th><th scope="col">Tour excess/km</th></tr></thead><tbody>{vehicles.map((v) => <tr key={v.id}><th scope="row"><div className="price-vehicle"><span className="price-vehicle-art" data-vehicle={v.id} aria-hidden="true" /><span>{v.name}{v.id === "comfort" ? <span className="table-note">The classic touring choice</span> : null}</span></div></th><td>{v.seats}</td><td>{usd(v.multiDay)}</td><td>{usd(v.day)}</td><td>{usd(v.airport)}</td><td>{usd(v.minimum)}</td><td>{usd(v.transferBase)}</td><td>{usd(v.perKm)}</td><td>{usd(v.tourExcessPerKm)}</td></tr>)}</tbody></table>
     </div>
     <ul className="mobile-price-list" aria-label="Vehicle prices in US dollars, per vehicle">
       {vehicles.map((v) => <li className="mobile-price-card" key={v.id}>
@@ -64,10 +64,14 @@ export function Prices() {
           <div><dt>Multi-day tour<span>Per day · {allowances.multiDayKm} km</span></dt><dd>{usd(v.multiDay)}</dd></div>
           <div><dt>Chauffeur for a day<span>{allowances.dayKm} km · {allowances.dayHours} hours</span></dt><dd>{usd(v.day)}</dd></div>
           <div><dt>CMB → Colombo<span>Central Colombo reference</span></dt><dd>{usd(v.airport)}</dd></div>
-          <div><dt>Point-to-point<span>Minimum fare from</span></dt><dd>{usd(v.pointToPoint)}</dd></div>
+          <div><dt>Point-to-point<span>Minimum fare from</span></dt><dd>{usd(v.minimum)}</dd></div>
+          <div><dt>Transfer base</dt><dd>{usd(v.transferBase)}</dd></div>
+          <div><dt>Per km</dt><dd>{usd(v.perKm)}</dd></div>
+          <div><dt>Tour excess/km</dt><dd>{usd(v.tourExcessPerKm)}</dd></div>
         </dl>
       </li>)}
     </ul>
+    <p className="price-note">Point-to-point fare is the greater of the minimum fare or transfer base + per-km rate × agreed route distance, plus approved supplements. Without a reliable route distance, we show a starting fare or provide a quotation. Rates version {PRICING_VERSION}.</p>
     <p className="price-note">Multi-day rates include 120 km per day pooled allowance. Single-day hire includes 100 km and 10 hours. Airport rates apply to CMB and Central Colombo zone. The human-issued confirmed quotation remains authoritative.</p>
     <div className="terms-cards"><article data-reveal><h3>Paying for your trip.</h3><p>After you accept your confirmed quotation, pay a 10% booking deposit through the secure payment link we send on WhatsApp or by bank transfer to our business account. We confirm your booking after verifying the payment.</p><p>Settle the balance at pickup by link, transfer or cash and receive a receipt.</p></article><article data-reveal><h3>Cancellations and changes.</h3><p>Cancel more than 24 hours before your trip for a full refund of your deposit. Read the booking terms for refunds, changes and flight delays.</p><Link href="/terms" className="action action-dark">Read booking terms <Arrow diagonal /></Link></article></div>
   </div></section>;

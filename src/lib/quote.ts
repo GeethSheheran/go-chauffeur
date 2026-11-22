@@ -1,4 +1,4 @@
-import { allowances, services, type Service, type Vehicle, usd } from "./prices.ts";
+import { PRICING_VERSION, allowances, services, type Service, type Vehicle, usd } from "./prices.ts";
 
 export type Trip = {
   service: Service;
@@ -9,6 +9,8 @@ export type Trip = {
   days: string;
   travellers: string;
   distanceKm?: number | null;
+  pickupPlaceId?: string;
+  destinationPlaceId?: string;
 };
 
 export function numberInRange(value: string, min: number, max: number) {
@@ -65,13 +67,13 @@ export function estimateTrip(
         km: null,
       };
     case "point-to-point": {
-      if (typeof distanceKm === "number" && !isNaN(distanceKm) && distanceKm > 0) {
+      if (typeof distanceKm === "number" && Number.isFinite(distanceKm) && distanceKm > 0) {
         if (vehicle.transferBase !== null && vehicle.perKm !== null && vehicle.minimum !== null) {
           const calculated = vehicle.transferBase + vehicle.perKm * distanceKm;
-          return { amount: Math.round(Math.max(vehicle.minimum, calculated)), km: Math.round(distanceKm) };
+          return { amount: Math.round(Math.max(vehicle.minimum, calculated) * 100) / 100, km: distanceKm };
         }
       }
-      return { amount: vehicle.pointToPoint === null ? null : Math.round(vehicle.pointToPoint), km: null };
+      return { amount: vehicle.minimum === null ? null : vehicle.minimum, km: null };
     }
   }
 }
@@ -99,13 +101,16 @@ export function tripReview(trip: Trip) {
         : "To discuss",
     },
     { label: "Vehicle", value: trip.vehicle.name },
+    ...(trip.service === "point-to-point" && estimate.km !== null ? [{ label: "Driving distance", value: `${estimate.km.toFixed(1)} km · Google Maps` }] : []),
+    ...(trip.service === "point-to-point" ? [{ label: "Fare basis", value: "Greater of minimum fare or base + per-km rate × agreed route distance, plus approved supplements. Starting fare only when distance is unavailable." }] : []),
+    { label: "Pricing version", value: PRICING_VERSION },
     ...(trip.service === "airport" ? [{ label: "Fare basis", value: "CMB to Central Colombo zone reference fare; other routes quoted separately" }] : []),
     {
       label: "Indicative price",
       value: isLargeGroup
         ? "On request (Custom quotation)"
         : estimate.amount !== null
-        ? `${trip.service === "point-to-point" && !trip.distanceKm ? "From " : ""}${usd(estimate.amount)} per vehicle`
+        ? `${trip.service === "point-to-point" && estimate.km === null ? "From " : ""}${usd(estimate.amount)} per vehicle`
         : "On request",
     },
   ];

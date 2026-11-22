@@ -1,3 +1,5 @@
+export const PRICING_VERSION = "2026-11-22.1";
+
 export const services = [
   { id: "airport", label: "Airport transfer", short: "Airport transfer" },
   { id: "point-to-point", label: "Point-to-point", short: "Point-to-point" },
@@ -138,7 +140,7 @@ export const vehicles: Vehicle[] = [
 ];
 
 export function usd(amount: number | null) {
-  return amount === null ? "On request" : `US$${Math.round(amount).toLocaleString("en-US")}`;
+  return amount === null ? "On request" : `US$${amount.toLocaleString("en-US", { maximumFractionDigits: 2 })}`;
 }
 
 export function isVehicleSuitable(vehicle: Vehicle, travellerCount: number): { suitable: boolean; reason?: string } {

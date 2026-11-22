@@ -6,6 +6,7 @@ import { campaignReference, track } from "@/lib/analytics";
 import { businessWhatsappUrl, quoteMessage, tripReview, estimateTrip, numberInRange, type Trip } from "@/lib/quote";
 import { Arrow, WhatsAppIcon } from "./icons";
 import { vehicles, getSmallestSuitableVehicle } from "@/lib/prices";
+import { useRouteDistance } from "./use-route-distance";
 import { DatePicker } from "./date-picker";
 import { ServiceSelect } from "./service-select";
 import { LocationInput } from "./location-input";
@@ -22,6 +23,8 @@ export function EnquiryProvider({ children }: { children: ReactNode }) {
   const [enquiry, setEnquiry] = useState<Enquiry | null>(null);
   const [reference, setReference] = useState("");
   const [draft, setDraft] = useState<Trip | null>(null);
+  const route = useRouteDistance(draft?.service === "point-to-point", draft?.pickupPlaceId, draft?.destinationPlaceId);
+  const resolvedDraft = draft ? { ...draft, distanceKm: route.distanceKm } : null;
   const editButton = useRef<HTMLButtonElement>(null);
   const editor = useRef<HTMLFormElement>(null);
   const message = enquiry ? `${enquiry.message}\n\n${reference}` : "";
@@ -58,13 +61,14 @@ export function EnquiryProvider({ children }: { children: ReactNode }) {
       <div className="review-content-heading"><span className="review-eyebrow">{draft ? "MAKE IT YOURS" : "TRIP DETAILS"}</span><p id="enquiry-description">{draft ? "Update your ride below." : "Check your details. We’ll confirm availability and your quotation on WhatsApp."}</p></div>
       {enquiry?.review ? <form ref={editor} onSubmit={(event) => {
         event.preventDefault();
-        if (!draft) return;
+        if (!resolvedDraft || route.loading) return;
+        const draft = resolvedDraft;
         enquiry.onSaveTrip?.(draft);
-        setEnquiry({ ...enquiry, trip: draft, message: `${quoteMessage(draft)}${enquiry.location === "itinerary" && enquiry.item ? `\nItinerary: ${enquiry.item}` : ""}`, review: tripReview(draft), lead: { service: draft.service, vehicle: draft.vehicle.name, days: draft.service === "multi-day" && numberInRange(draft.days, 2, 30) ? Number(draft.days) : null, estimate_usd: estimateTrip(draft.service, draft.vehicle, draft.days, draft.travellers).amount } });
+        setEnquiry({ ...enquiry, trip: draft, message: `${quoteMessage(draft)}${enquiry.location === "itinerary" && enquiry.item ? `\nItinerary: ${enquiry.item}` : ""}`, review: tripReview(draft), lead: { service: draft.service, vehicle: draft.vehicle.name, days: draft.service === "multi-day" && numberInRange(draft.days, 2, 30) ? Number(draft.days) : null, estimate_usd: estimateTrip(draft.service, draft.vehicle, draft.days, draft.travellers, draft.distanceKm).amount } });
         setDraft(null); editButton.current?.focus();
       }}>
         <dl className="ride-review" data-editing={!!draft} key={draft ? "editing" : "review"}>
-          {(draft ? tripReview(draft) : enquiry.review).map(({ label, value }) => {
+          {(resolvedDraft ? tripReview(resolvedDraft) : enquiry.review).map(({ label, value }) => {
             const field = ({ Service: "service", Pickup: "pickup", "Places to visit": "destination", "Drop-off": "destination", "Start date": "date", Date: "date", Days: "days", Travellers: "travellers", Vehicle: "vehicle" } as Record<string, "service" | "pickup" | "destination" | "date" | "days" | "travellers" | "vehicle">)[label];
             const id = `review-${field}`;
             return <div key={label} className={label === "Indicative price" ? "review-price" : ""}>
@@ -72,7 +76,7 @@ export function EnquiryProvider({ children }: { children: ReactNode }) {
               <dd>{draft && field ? field === "service" ? <ServiceSelect id={id} hideLabel value={draft.service} onChange={(service) => setDraft({ ...draft, service })} />
                 : field === "vehicle" ? <VehicleSelect id={id} value={draft.vehicle.id} travellers={draft.travellers} onChange={(value) => setDraft({ ...draft, vehicle: vehicles.find((v) => v.id === value)! })} />
                 : field === "date" ? <DatePicker id={id} hideLabel label={label} value={draft.date} onChange={(date) => setDraft({ ...draft, date })} />
-                : field === "pickup" || field === "destination" ? <LocationInput id={id} hideLabel label={label} placeholder="Hotel, city or area" multiple={field === "destination" && draft.service === "multi-day"} value={draft[field]} onChange={(value) => setDraft({ ...draft, [field]: value })} />
+                : field === "pickup" || field === "destination" ? <LocationInput id={id} hideLabel label={label} placeholder="Hotel, city or area" multiple={field === "destination" && draft.service === "multi-day"} value={draft[field]} onChange={(value, placeId) => setDraft({ ...draft, [field]: value, [field === "pickup" ? "pickupPlaceId" : "destinationPlaceId"]: placeId, distanceKm: null })} />
                 : field === "travellers" ? <input id={id} type="number" min="1" max="20" step="1" value={draft.travellers} onChange={(e) => {
                     const val = e.target.value;
                     const n = Number(val);
@@ -90,7 +94,7 @@ export function EnquiryProvider({ children }: { children: ReactNode }) {
             </div>;
           })}
         </dl>
-        {draft && <><p className="review-edit-note">Enter any location. Separate multiple stops with a semicolon.</p><div className="review-edit-actions"><button className="action action-dark" type="submit">Save changes <Arrow diagonal /></button><button className="outline-action" type="button" onClick={() => { setDraft(null); editButton.current?.focus(); }}>Discard changes</button></div></>}
+        {draft && <>{draft.service === "point-to-point" && <p className="small-note" role="status">{route.status}</p>}<p className="review-edit-note">Search Google Maps to select locations. Add multiple stops one by one.</p><div className="review-edit-actions"><button className="action action-dark" type="submit" disabled={route.loading}>Save changes <Arrow diagonal /></button><button className="outline-action" type="button" onClick={() => { setDraft(null); editButton.current?.focus(); }}>Discard changes</button></div></>}
       </form> : <pre className="review-message">{enquiry?.message}</pre>}
       <div className="enquiry-actions review-actions" hidden={!!draft}>
         {handoffUrl ? <a className="action action-dark" href={handoffUrl} onClick={send} target="_blank" rel="noopener noreferrer"><WhatsAppIcon /><span>Send to WhatsApp</span><Arrow diagonal /></a> : <><button className="action action-dark" disabled>Send to WhatsApp</button><p role="status">WhatsApp enquiries are not connected yet. Please try again later.</p></>}

@@ -5,6 +5,7 @@ import { useSearchParams } from "next/navigation";
 import { allowances, services, usd, vehicles, getSmallestSuitableVehicle, type Service } from "@/lib/prices";
 import { estimateTrip, numberInRange, quoteMessage, tripReview, type Trip } from "@/lib/quote";
 import { track } from "@/lib/analytics";
+import { useRouteDistance } from "./use-route-distance";
 import { DatePicker } from "./date-picker";
 import { VehicleSelect } from "./vehicle-select";
 import { LocationInput } from "./location-input";
@@ -23,8 +24,12 @@ function Planner({ initial }: { initial: Service }) {
   const [days, setDays] = useState("5");
   const [travellers, setTravellers] = useState("2");
   const [pickup, setPickup] = useState("");
-  const [airport, setAirport] = useState("Colombo airport (CMB)");
+  const [airport, setAirport] = useState("");
   const [destination, setDestination] = useState("");
+  const [airportPlaceId, setAirportPlaceId] = useState<string>();
+  const [pickupPlaceId, setPickupPlaceId] = useState<string>();
+  const [destinationPlaceId, setDestinationPlaceId] = useState<string>();
+  const route = useRouteDistance(service === "point-to-point", pickupPlaceId, destinationPlaceId);
   const [date, setDate] = useState("");
   const [vehicleNotice, setVehicleNotice] = useState<string | null>(null);
 
@@ -38,7 +43,7 @@ function Planner({ initial }: { initial: Service }) {
   const validDays = service === "multi-day" ? numberInRange(days, 2, 30) : true;
   const isSingleDayDuration = service === "multi-day" && days.trim() === "1";
 
-  const estimate = estimateTrip(service, vehicle, days, travellers);
+  const estimate = estimateTrip(service, vehicle, days, travellers, route.distanceKm);
 
   function select(next: Service) {
     setService(next);
@@ -100,10 +105,14 @@ function Planner({ initial }: { initial: Service }) {
     date,
     days,
     travellers,
+    pickupPlaceId: service === "airport" ? airportPlaceId : pickupPlaceId, destinationPlaceId, distanceKm: route.distanceKm,
   };
   const message = quoteMessage(trip);
 
   function saveTrip(next: Trip) {
+    if (next.service === "airport") setAirportPlaceId(next.pickupPlaceId);
+    else setPickupPlaceId(next.pickupPlaceId);
+    setDestinationPlaceId(next.destinationPlaceId);
     setService(next.service);
     setVehicleId(next.vehicle.id);
     setDays(next.days);
@@ -120,7 +129,7 @@ function Planner({ initial }: { initial: Service }) {
     <div className="quote-widget" id="services" aria-labelledby={`${id}-title`} data-lenis-prevent>
       <div className="widget-lead">
         <h2 id={`${id}-title`}>Plan your ride.</h2>
-        <p className="widget-intro">Tell us the basics. We'll send you a confirmed quotation on WhatsApp.</p>
+        <p className="widget-intro">Tell us the basics. We’ll send you a confirmed quotation on WhatsApp.</p>
         <div className="service-tabs" role="tablist" aria-label="Choose your service">
           {services.map((s, index) => (
             <button
@@ -143,18 +152,16 @@ function Planner({ initial }: { initial: Service }) {
           <LocationInput
             label={service === "airport" ? "Pickup airport" : "Pickup"}
             value={service === "airport" ? airport : pickup}
-            onChange={service === "airport" ? setAirport : setPickup}
+            onChange={(value, placeId) => { (service === "airport" ? setAirport : setPickup)(value); (service === "airport" ? setAirportPlaceId : setPickupPlaceId)(placeId); }}
             placeholder="Hotel, city or airport"
-            airport={service === "airport"}
           />
           <LocationInput
             key={service}
             label={service === "multi-day" ? "Places you want to see" : service === "airport" ? "Drop-off hotel or area" : "Destination"}
             value={destination}
-            onChange={setDestination}
+            onChange={(value, placeId) => { setDestination(value); setDestinationPlaceId(service === "multi-day" ? undefined : placeId); }}
             placeholder={service === "multi-day" ? "e.g. Sigiriya, Kandy, Ella" : "Hotel, city or area"}
             multiple={service === "multi-day"}
-            nearby={service === "airport" ? airport : pickup}
           />
           <DatePicker
             className={service !== "multi-day" ? "field-date" : ""}
@@ -241,12 +248,12 @@ function Planner({ initial }: { initial: Service }) {
                 ? `${allowances.dayKm} km · ${allowances.dayHours} hours`
                 : service === "airport"
                 ? "CMB → Central Colombo reference fare"
-                : "Minimum fare · Route quoted by our team"}
+                : route.distanceKm !== null ? `${route.distanceKm.toFixed(1)} km driving distance` : "Minimum fare · Route quoted by our team"}
             </span>
             <strong>
               {isLargeGroup
                 ? "On request"
-                : service === "point-to-point" && estimate.amount !== null
+                : service === "point-to-point" && route.distanceKm === null && estimate.amount !== null
                 ? "From "
                 : ""}
               {!isLargeGroup ? usd(estimate.amount) : null}
@@ -264,7 +271,7 @@ function Planner({ initial }: { initial: Service }) {
           review={tripReview(trip)}
           trip={trip}
           onSaveTrip={saveTrip}
-          disabled={!canProceed}
+          disabled={!canProceed || (service === "point-to-point" && route.loading)}
           lead={{
             service,
             vehicle: vehicle.name,

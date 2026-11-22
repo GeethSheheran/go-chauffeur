@@ -3,19 +3,24 @@ import AxeBuilder from "@axe-core/playwright";
 
 test.use({ reducedMotion: "reduce" });
 
-test("Free suggestions, custom stops and review preserve the complete WhatsApp enquiry", async ({ page }, info) => {
+test("Google suggestions and review preserve the complete WhatsApp enquiry", async ({ page }, info) => {
+  await page.route("**/api/maps/places", route => {
+    const { input } = route.request().postDataJSON();
+    return route.fulfill({ json: { suggestions: [{ id: `place_${input}`, label: input }] } });
+  });
   await page.goto("/?utm_source=planner-test");
   const pickup = page.getByRole("combobox", { name: "Pickup", exact: true });
   await pickup.fill("Ella");
+  await expect(page.getByRole("option", { name: "Ella Sri Lanka", exact: true })).toBeVisible();
   await pickup.press("ArrowDown");
   await pickup.press("Enter");
   await expect(pickup).toHaveValue("Ella");
   const stops = page.getByRole("combobox", { name: "Places you want to see" });
-  await stops.focus();
+  await stops.fill("Nine Arch Bridge");
   await expect(page.getByRole("option", { name: "Nine Arch Bridge Sri Lanka", exact: true })).toBeVisible();
   await page.getByRole("option", { name: "Nine Arch Bridge Sri Lanka", exact: true }).click();
   await stops.fill("Nine Arch Bridge; My private tea estate");
-  await page.getByRole("option", { name: "Use “My private tea estate” Custom location", exact: true }).click();
+  await page.getByRole("option", { name: "My private tea estate Sri Lanka", exact: true }).click();
   // Uncommitted free text must also survive review without choosing a suggestion.
   await pickup.fill("My guesthouse & garden");
   await page.getByLabel("Start date", { exact: true }).fill("2026-12-20");
@@ -29,7 +34,7 @@ test("Free suggestions, custom stops and review preserve the complete WhatsApp e
   await expect(dialog).toBeVisible();
   await expect(dialog.locator(".ride-review")).toContainText("My guesthouse & garden");
   await expect(dialog.locator(".ride-review")).toContainText("Nine Arch Bridge → My private tea estate");
-  await expect(dialog.locator(".review-price")).toContainText("US$570 per vehicle");
+  await expect(dialog.locator(".review-price")).toContainText("US$630 per vehicle");
   const link = dialog.getByRole("link", { name: "Send to WhatsApp" });
   const url = new URL((await link.getAttribute("href"))!);
   expect(url.pathname).toBe("/94762196201");
@@ -46,10 +51,10 @@ test("Free suggestions, custom stops and review preserve the complete WhatsApp e
   await expect(dialog.getByLabel("Service", { exact: true })).toBeFocused();
   await dialog.getByLabel("Days", { exact: true }).fill("7");
   await dialog.getByLabel("Pickup", { exact: true }).fill("Changed guesthouse");
-  await expect(dialog.locator(".review-price")).toContainText("US$665");
+  await expect(dialog.locator(".review-price")).toContainText("US$735");
   await dialog.getByRole("button", { name: "Discard changes" }).click();
   await expect(dialog.locator(".ride-review")).toContainText("My guesthouse & garden");
-  await expect(dialog.locator(".review-price")).toContainText("US$570");
+  await expect(dialog.locator(".review-price")).toContainText("US$630");
   await expect(link).toHaveAttribute("href", url.toString());
   await dialog.getByRole("button", { name: "Edit my ride" }).click();
   await dialog.getByLabel("Days", { exact: true }).fill("7");
@@ -57,7 +62,7 @@ test("Free suggestions, custom stops and review preserve the complete WhatsApp e
   await page.screenshot({ path: `/private/tmp/ride-edit-${info.project.name}.png`, animations: "disabled" });
   expect((await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21aa"]).analyze()).violations).toEqual([]);
   await dialog.getByRole("button", { name: "Save changes" }).click();
-  await expect(dialog.locator(".review-price")).toContainText("US$665");
+  await expect(dialog.locator(".review-price")).toContainText("US$735");
   const savedUrl = new URL((await link.getAttribute("href"))!);
   expect(savedUrl.searchParams.get("text")).toContain("Pickup: Changed guesthouse");
   expect(savedUrl.searchParams.get("text")).toContain("Days: 7");
@@ -89,7 +94,7 @@ test("Airport and day enquiries accept custom locations and keep the review edit
   await page.getByRole("combobox", { name: "Vehicle", exact: true }).click();
   await page.getByRole("option", { name: /Executive \/ Luxury/ }).click();
   await page.getByRole("button", { name: "Review my ride", exact: true }).click();
-  await expect(page.locator(".ride-review")).toContainText("On request per vehicle");
+  await expect(page.locator(".ride-review")).toContainText("On request");
   const dialog = page.getByRole("dialog");
   await dialog.getByRole("button", { name: "Edit my ride" }).click();
   await dialog.getByRole("combobox", { name: "Service", exact: true }).click();
