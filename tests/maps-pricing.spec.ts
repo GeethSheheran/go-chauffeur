@@ -45,8 +45,8 @@ test("route errors leave a clearly labelled minimum fare", async ({ page }) => {
 
 test("location fields never offer predefined or custom fallback suggestions", async ({ page }) => {
   await page.route("**/api/maps/places", route => route.fulfill({ json: { suggestions: [] } }));
-  await page.goto("/?service=airport");
-  const pickup = page.getByRole("combobox", { name: "Pickup airport", exact: true });
+  await page.goto("/?service=point-to-point");
+  const pickup = page.getByRole("combobox", { name: "Pickup", exact: true });
   await expect(pickup).toHaveValue("");
   await pickup.focus();
   await expect(page.getByRole("option")).toHaveCount(0);
@@ -59,4 +59,27 @@ test("location fields never offer predefined or custom fallback suggestions", as
   await pickup.fill("Kandy");
   await expect(page.getByText("Google Maps search is unavailable. Please try again or request a quotation.")).toBeVisible();
   await expect(page.getByRole("option")).toHaveCount(0);
+});
+
+test("airport transfers lock the Google CMB pickup in the planner and review", async ({ page }) => {
+  const airport = "Bandaranaike International Airport (CMB), Airport and Aviation Services (Sri Lanka) (Private) Limited, Canada Friendship Rd, Katunayake";
+  await page.route("**/api/maps/places", route => route.fulfill({ json: { suggestions: [{ id: "google_cmb_airport", label: airport }] } }));
+  await page.goto("/?service=airport");
+  const pickup = page.getByRole("combobox", { name: "Pickup airport", exact: true });
+  await expect(pickup).toHaveValue(airport);
+  await expect(page.getByText("Search and select a Sri Lankan location from Google Maps.", { exact: true })).toHaveCount(0);
+  await page.getByRole("button", { name: "Review my ride", exact: true }).click();
+  await expect(page.getByRole("dialog").locator(".ride-review")).toContainText(airport);
+  await page.getByRole("dialog").getByRole("button", { name: "Edit my ride" }).click();
+  await expect(page.getByRole("dialog").getByRole("combobox", { name: "Pickup", exact: true })).toHaveAttribute("readonly", "");
+  await page.keyboard.press("Escape");
+  await expect(pickup).toHaveAttribute("readonly", "");
+  await pickup.focus();
+  await pickup.press("Backspace");
+  await pickup.press("ArrowDown");
+  await expect(page.getByRole("listbox")).toHaveCount(0);
+  await expect(pickup).toHaveValue(airport);
+  await page.getByRole("tab", { name: "Point-to-point", exact: true }).click();
+  await page.getByRole("tab", { name: "Airport transfer", exact: true }).click();
+  await expect(pickup).toHaveValue(airport);
 });

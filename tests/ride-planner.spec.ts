@@ -80,12 +80,12 @@ test("Google suggestions and review preserve the complete WhatsApp enquiry", asy
   await whatsapp.close();
 });
 
-test("Airport and day enquiries accept custom locations and keep the review editable", async ({ page }) => {
+test("Airport pickup stays fixed while other trip details remain editable", async ({ page }) => {
   await page.goto("/?service=airport");
-  await page.getByRole("combobox", { name: "Pickup airport" }).fill("Custom arrival point");
+  await expect(page.getByRole("combobox", { name: "Pickup airport" })).toHaveAttribute("readonly", "");
   await page.getByRole("combobox", { name: "Drop-off hotel or area" }).fill("A hotel outside the list");
   await page.getByRole("button", { name: "Review my ride", exact: true }).click();
-  await expect(page.locator(".ride-review")).toContainText("Custom arrival point");
+  await expect(page.locator(".ride-review")).toContainText("Bandaranaike International Airport");
   await expect(page.locator(".ride-review")).toContainText("A hotel outside the list");
   await expect(page.locator(".ride-review dt", { hasText: /^Days$/ })).toHaveCount(0);
   await page.keyboard.press("Escape");

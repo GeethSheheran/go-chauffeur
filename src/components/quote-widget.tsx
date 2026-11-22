@@ -150,6 +150,7 @@ function Planner({ initial }: { initial: Service }) {
       <div id={`${id}-panel`} role="tabpanel" aria-labelledby={`${id}-${service}`}>
         <div className="widget-fields">
           <LocationInput
+            autoSelectAirport={service === "airport"}
             label={service === "airport" ? "Pickup airport" : "Pickup"}
             value={service === "airport" ? airport : pickup}
             onChange={(value, placeId) => { (service === "airport" ? setAirport : setPickup)(value); (service === "airport" ? setAirportPlaceId : setPickupPlaceId)(placeId); }}

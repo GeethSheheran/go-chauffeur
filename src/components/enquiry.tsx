@@ -76,7 +76,7 @@ export function EnquiryProvider({ children }: { children: ReactNode }) {
               <dd>{draft && field ? field === "service" ? <ServiceSelect id={id} hideLabel value={draft.service} onChange={(service) => setDraft({ ...draft, service })} />
                 : field === "vehicle" ? <VehicleSelect id={id} value={draft.vehicle.id} travellers={draft.travellers} onChange={(value) => setDraft({ ...draft, vehicle: vehicles.find((v) => v.id === value)! })} />
                 : field === "date" ? <DatePicker id={id} hideLabel label={label} value={draft.date} onChange={(date) => setDraft({ ...draft, date })} />
-                : field === "pickup" || field === "destination" ? <LocationInput id={id} hideLabel label={label} placeholder="Hotel, city or area" multiple={field === "destination" && draft.service === "multi-day"} value={draft[field]} onChange={(value, placeId) => setDraft({ ...draft, [field]: value, [field === "pickup" ? "pickupPlaceId" : "destinationPlaceId"]: placeId, distanceKm: null })} />
+                : field === "pickup" || field === "destination" ? <LocationInput autoSelectAirport={field === "pickup" && draft.service === "airport"} id={id} hideLabel label={label} placeholder="Hotel, city or area" multiple={field === "destination" && draft.service === "multi-day"} value={draft[field]} onChange={(value, placeId) => setDraft({ ...draft, [field]: value, [field === "pickup" ? "pickupPlaceId" : "destinationPlaceId"]: placeId, distanceKm: null })} />
                 : field === "travellers" ? <input id={id} type="number" min="1" max="20" step="1" value={draft.travellers} onChange={(e) => {
                     const val = e.target.value;
                     const n = Number(val);
