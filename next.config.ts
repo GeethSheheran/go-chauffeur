@@ -1,6 +1,8 @@
 import type { NextConfig } from "next";
 
 const config: NextConfig = {
+  // Serve existing image assets on Workers without requiring Cloudflare Images.
+  images: { unoptimized: process.env.CLOUDFLARE_BUILD === "1" },
   poweredByHeader: false,
   devIndicators: false,
   allowedDevOrigins: ["127.0.0.1", "localhost"],

@@ -80,3 +80,38 @@ Pickup and destination search is restricted to Sri Lanka. Select a Google sugges
 Vercel troubleshooting: open the project’s **Settings → Environment Variables** and add `GOOGLE_MAPS_API_KEY` for Production and Preview. Use the key value without surrounding quotes, then redeploy the affected environment. Existing deployments do not pick up environment-variable changes. `.env.local` is ignored by Git and is not a deployment configuration.
 
 If search still fails, inspect Vercel function logs for `[Google Maps]`: `MAPS_NOT_CONFIGURED` means the deployed environment lacks a non-empty key; `MAPS_ACCESS_DENIED` means Google returned 403 (check API enablement, billing and key restrictions); `MAPS_QUOTA_EXCEEDED` means Google returned 429; `MAPS_INVALID_REQUEST_OR_KEY` means Google returned 400; `MAPS_TIMEOUT` indicates a request timeout. Logs omit API keys and search locations.
+
+
+## Deploy to Cloudflare Workers
+
+This app has POST route handlers for Google Maps. Use a **Worker**, not Cloudflare Pages or the **Next.js (Static HTML Export)** preset. `next build` does not generate `out`, and pointing Pages at `.next` will not run the API endpoints.
+
+The repository uses the OpenNext Cloudflare adapter to retain the existing Next.js application. Setup reference: https://opennext.js.org/cloudflare/get-started
+
+1. Commit and push the Cloudflare setup (including `package-lock.json`, `wrangler.jsonc`, `open-next.config.ts`, and the updated scripts) to GitHub. Redeploying the old commit does not include these changes.
+2. In Cloudflare **Workers & Pages**, create a **Worker** connected to `GeethSheheran/go-chauffeur`. Leave the failed Pages project separate; do not select the Static HTML Export preset.
+3. Set the Worker name to `go-chauffeur`, production branch to `main`, and root directory to the repository root. Use these commands:
+
+   | Setting | Value |
+   | --- | --- |
+   | Build command | `npm run build:cloudflare` |
+   | Deploy command | `npm run deploy:cloudflare` |
+   | Output directory | Not applicable to Workers; Wrangler selects the worker and assets |
+
+4. Add `GOOGLE_MAPS_API_KEY` as a **runtime Secret** under the Worker’s **Settings → Variables and Secrets**. A build-only variable or a variable in the old Pages project does not configure the Worker. Enable Places API (New), Routes API and billing in the Google project. No public/browser key is required.
+5. Set `NEXT_PUBLIC_SITE_URL` to the final site URL in **Build variables and secrets**. Optional `NEXT_PUBLIC_WHATSAPP_NUMBER` and `NEXT_PUBLIC_CONTACT_EMAIL` overrides also belong there. Rebuild after changing public variables. Keep the Maps key out of `NEXT_PUBLIC_*` variables and source control.
+6. Deploy. On the `workers.dev` URL, test the home page, images, Google location suggestions, point-to-point distance/fare and WhatsApp handoff. A missing Maps runtime secret produces `MAPS_NOT_CONFIGURED` in the Worker logs.
+7. After testing, add your domain in the Worker’s **Settings → Domains & Routes**, then retire the old host when the new domain works.
+
+Local validation:
+
+```sh
+npm ci
+npm run build:cloudflare
+npm run check:cloudflare
+npm run preview:cloudflare
+```
+
+`check:cloudflare` packages the Worker without uploading it. `preview:cloudflare` serves the already-built Worker locally. Runtime secrets for local preview can be placed in ignored `.dev.vars`; never commit that file. The build removes private `.env` values from OpenNext’s generated environment module; configure them as runtime secrets instead. The `GOOGLE_MAPS_API_KEY` is read at request time. `npm run deploy:cloudflare` uploads the already-built output, so build first when deploying manually.
+
+Cloudflare builds serve the original local image assets directly, without a paid image-transformation binding. The normal Next.js/Vercel build retains image optimization. There is no ISR or persistent data cache in this application, so this initial configuration does not provision R2. Keep the Worker name and `WORKER_SELF_REFERENCE` service name in `wrangler.jsonc` identical if renaming the project. Dashboard runtime variables are retained across deployments.

@@ -10,3 +10,8 @@ test-results/
 playwright-report/
 # Keep unused uploaded video masters local.
 public/videos/
+
+# Cloudflare generated output and local secrets
+.open-next/
+.wrangler/
+.dev.vars*

@@ -10,7 +10,11 @@
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "test": "node --experimental-strip-types --test src/lib/quote.test.ts",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "build:cloudflare": "CLOUDFLARE_BUILD=1 opennextjs-cloudflare build && node scripts/sanitize-worker-env.mjs",
+    "preview:cloudflare": "opennextjs-cloudflare preview",
+    "deploy:cloudflare": "opennextjs-cloudflare deploy",
+    "check:cloudflare": "wrangler deploy --dry-run"
   },
   "dependencies": {
     "@tailwindcss/postcss": "^4.1.0",
@@ -22,12 +26,14 @@
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.14.0",
+    "@opennextjs/cloudflare": "^1.20.18",
     "@playwright/test": "^1.65.0",
     "@types/node": "^24.0.0",
     "@types/react": "^19.2.0",
     "@types/react-dom": "^19.2.0",
     "eslint": "^9.0.0",
     "eslint-config-next": "^16.0.0",
-    "typescript": "^5.9.0"
+    "typescript": "^5.9.0",
+    "wrangler": "^4.166.0"
   }
 }
