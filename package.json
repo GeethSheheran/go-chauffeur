@@ -9,7 +9,7 @@
     "start": "next start --hostname 127.0.0.1 --port 3000",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
-    "test": "node --experimental-strip-types --test src/lib/quote.test.ts",
+    "test": "node --experimental-strip-types --test src/lib/quote.test.ts src/lib/analytics.test.mjs",
     "test:e2e": "playwright test",
     "build:cloudflare": "CLOUDFLARE_BUILD=1 opennextjs-cloudflare build && node scripts/sanitize-worker-env.mjs",
     "preview:cloudflare": "opennextjs-cloudflare preview",

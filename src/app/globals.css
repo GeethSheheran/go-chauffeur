@@ -831,3 +831,12 @@ dialog.enquiry-dialog[open]::backdrop, dialog.mobile-menu[open]::backdrop { opac
 .ride-review .location-hint { margin-top: 6px; }
 .ride-review .location-menu { top: 48px; }
 @media (max-width: 700px) { .hero-booking-form .widget-fields > .date-picker { grid-column: 1 / -1; } }
+
+.analytics-settings { padding: 4px 0; color: inherit; background: none; border: 0; text-decoration: underline; cursor: pointer; font: inherit; }
+.analytics-consent { position: fixed; z-index: 1000; inset: auto 20px 20px; max-width: 640px; padding: 20px; background: var(--white); color: var(--forest); border: 1px solid var(--forest); box-shadow: 0 4px 24px #16362a26; font-size: 14px; line-height: 1.6; }
+.analytics-consent p { margin: 0 0 16px; }
+.analytics-consent a { text-decoration: underline; }
+.analytics-consent > div { display: flex; flex-wrap: wrap; gap: 12px; }
+.analytics-consent button { min-height: 44px; padding: 10px 16px; border: 1px solid var(--forest); background: var(--white); color: var(--forest); cursor: pointer; font: inherit; }
+.analytics-consent button:hover { background: var(--forest); color: var(--white); }
+.analytics-consent button:focus-visible, .analytics-settings:focus-visible { outline: 2px solid currentColor; outline-offset: 4px; }

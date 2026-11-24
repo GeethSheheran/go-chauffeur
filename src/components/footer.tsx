@@ -4,6 +4,7 @@ import { Brand } from "./brand";
 import { Arrow } from "./icons";
 import { EnquiryButton } from "./enquiry";
 import { FooterDrive } from "./footer-drive";
+import { AnalyticsConsent } from "./analytics-consent";
 
 export function Footer() {
   const email = process.env.NEXT_PUBLIC_CONTACT_EMAIL;
@@ -63,6 +64,7 @@ export function Footer() {
       <div className="footer-baseline">
         <div className="footer-credits">
           <span>© {new Date().getFullYear()} Go Technologies (Private) Limited.</span>
+          <AnalyticsConsent />
           <span>Designed and built by <a href="https://www.tourithm.lk/" target="_blank" rel="noopener noreferrer">Tourithm</a></span>
         </div>
         <a href="#top" aria-label="Back to top"><Arrow /></a>
