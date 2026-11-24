@@ -52,7 +52,7 @@ test("Trip shortlist toggles, survives navigation, removes stops and sends an op
   await expect(dialog.getByRole("button", { name: "Close my trip" })).toBeInViewport();
   await dialog.getByRole("button", { name: "Remove Colombo" }).click();
   let url = new URL((await dialog.getByRole("link", { name: "Send to WhatsApp" }).getAttribute("href"))!);
-  expect(url.pathname).toBe("/94762196201");
+  expect(url.pathname).toBe("/94775088164");
   expect(url.searchParams.get("text")).toContain("1. Negombo");
   expect(url.searchParams.get("text")).not.toContain("Colombo");
   expect(url.searchParams.get("text")).toContain("Start date: 2027-01-15");

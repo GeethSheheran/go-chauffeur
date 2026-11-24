@@ -37,7 +37,7 @@ test("Google suggestions and review preserve the complete WhatsApp enquiry", asy
   await expect(dialog.locator(".review-price")).toContainText("US$630 per vehicle");
   const link = dialog.getByRole("link", { name: "Send to WhatsApp" });
   const url = new URL((await link.getAttribute("href"))!);
-  expect(url.pathname).toBe("/94762196201");
+  expect(url.pathname).toBe("/94775088164");
   const message = url.searchParams.get("text")!;
   expect(message).toContain("Pickup: My guesthouse & garden\nPlaces to visit: Nine Arch Bridge → My private tea estate");
   expect(message).toContain("Start date: 2026-12-20\nDays: 6\nTravellers: 5\nVehicle: Family MPV / Van");

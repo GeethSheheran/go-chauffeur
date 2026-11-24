@@ -221,6 +221,10 @@ svg { display: block; flex-shrink: 0; }
 .footer-chat > .icon:last-child { background: var(--forest); color: var(--mint); }
 .footer-intro-copy > p { max-width: 460px; font-size: 14px; line-height: 1.75; color: var(--secondary); }
 .footer-brand-notes { display: grid; gap: 4px; margin-top: 16px; font-size: 11px; line-height: 1.65; color: var(--secondary); }
+.footer-socials { display: flex; gap: 8px; margin-top: 12px; }
+.footer-socials a { display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; border: 1px solid currentColor; border-radius: 0; color: var(--forest); }
+.footer-socials a:hover { background: var(--forest); color: white; }
+.footer-socials a:focus-visible { outline: 2px solid currentColor; outline-offset: 4px; }
 .footer-main { display: grid; align-content: start; grid-template-columns: 1.6fr 1fr 0.8fr 1fr; gap: 40px; padding-block: 24px; border-top: 1px solid rgb(22 54 42 / 40%); }
 .footer-brand .brand { width: 210px; max-width: 100%; }
 .footer-brand p { max-width: 280px; margin-top: 16px; font-size: 12px; line-height: 1.7; color: var(--secondary); }

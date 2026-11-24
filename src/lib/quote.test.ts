@@ -125,7 +125,7 @@ test("business WhatsApp handoff works without deployment configuration and respe
     delete process.env.NEXT_PUBLIC_WHATSAPP_NUMBER;
     for (const number of [undefined, "", "   "]) {
       const url = new URL(businessWhatsappUrl(message, number)!);
-      assert.equal(url.pathname, "/94762196201");
+      assert.equal(url.pathname, "/94775088164");
       assert.equal(url.searchParams.get("text"), message);
     }
     process.env.NEXT_PUBLIC_WHATSAPP_NUMBER = "+94 (77) 123-4567";

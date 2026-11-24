@@ -135,5 +135,5 @@ export function whatsappUrl(number: string, message: string) {
 
 // Confirmed public business contact; deployments do not receive .env.local.
 export function businessWhatsappUrl(message: string, number = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER) {
-  return whatsappUrl(number?.trim() || "94762196201", message);
+  return whatsappUrl(number?.trim() || "94775088164", message);
 }
